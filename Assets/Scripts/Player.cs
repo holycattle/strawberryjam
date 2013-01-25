@@ -6,6 +6,9 @@ public class Player : MonoBehaviour {
 	const float MAX_SPEED = 4f;
 	const float FAT_CONSUMPTIONRATE = 1f;
 	
+	const float MIN_FAT = 1f;
+	const float MAX_FAT = 10f;
+	
 	public float fatness;
 	
 	private float rotationSpeed = 180;
@@ -21,7 +24,7 @@ public class Player : MonoBehaviour {
 		trans = transform;
 		rigid = rigidbody;
 		
-		fatness = 5;
+		fatness = 1f;
 	}
 	
 	void OnGUI() {
@@ -45,8 +48,9 @@ public class Player : MonoBehaviour {
 					rigid.velocity = rigid.velocity.normalized * MAX_SPEED;
 				}
 				
-				// Subtract Fat
-				fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
+				// Subtract Fat if fat > 0
+				if(fatness > 1f)
+					fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
 			} else {
 				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
 				if(rigid.velocity.magnitude > MIN_SPEED) {
@@ -68,6 +72,7 @@ public class Player : MonoBehaviour {
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");	
 			fatness += c.gameObject.GetComponent<Item>().fat;
+			rigid.mass = fatness;
 			Destroy(c.gameObject);
 		}
 	}
