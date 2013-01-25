@@ -53,6 +53,8 @@ public class Player : MonoBehaviour {
 			c.rigidbody.velocity += rigid.velocity;
 //			rigid.AddForce(-rigid.velocity * 256);
 	//		rigid.velocity = -rigid.velocity;
+		} else if (c.gameObject.tag == "Food") {
+			Debug.Log("Food!");	
 		}
 	}
 }
