@@ -4,7 +4,9 @@ using System.Collections;
 public class Player : MonoBehaviour {
 	const float MIN_SPEED = 1f;
 	const float MAX_SPEED = 4f;
+	const float FAT_CONSUMPTIONRATE = 1f;
 	
+	public float fatness;
 	
 	private float rotationSpeed = 180;
 	private float moveSpeed = 16f;
@@ -18,6 +20,14 @@ public class Player : MonoBehaviour {
 	void Start () {
 		trans = transform;
 		rigid = rigidbody;
+		
+		fatness = 5;
+	}
+	
+	void OnGUI() {
+		if (controllable) {
+			GUI.Box(new Rect(0, 0, 100, 30), "Fat: " + fatness);
+		}
 	}
 	
 	void FixedUpdate () {
@@ -32,13 +42,14 @@ public class Player : MonoBehaviour {
 				if(rigid.velocity.magnitude > MAX_SPEED) {
 					rigid.velocity = rigid.velocity.normalized * MAX_SPEED;
 				}
-				Debug.Log("Accelerating: " + rigid.velocity.ToString());
+				
+				// Subtract Fat
+				fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
 			} else {
 				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
 				if(rigid.velocity.magnitude > MIN_SPEED) {
 					rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
 				}
-				Debug.Log(rigid.velocity.ToString());
 			}
 
 		}
@@ -54,6 +65,8 @@ public class Player : MonoBehaviour {
 	//		rigid.velocity = -rigid.velocity;
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");	
+			fatness += c.gameObject.GetComponent<Item>().fatness;
+			Destroy(c.gameObject);
 		}
 	}
 }
