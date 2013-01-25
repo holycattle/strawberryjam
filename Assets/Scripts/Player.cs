@@ -40,8 +40,7 @@ public class Player : MonoBehaviour {
 				}
 				Debug.Log(rigid.velocity.ToString());
 			}
-//			velocity = Vector3.forward * move * moveSpeed * moveSpeedMultiplier * Time.fixedDeltaTime;
-//			trans.Translate(velocity);
+
 		}
 	}
 	
