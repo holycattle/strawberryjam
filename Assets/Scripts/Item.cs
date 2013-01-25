@@ -3,6 +3,6 @@ using System.Collections;
 
 public class Item : MonoBehaviour {
 	
-	public float fatness = 1;
+	public float fat = 1;
 	
 }
