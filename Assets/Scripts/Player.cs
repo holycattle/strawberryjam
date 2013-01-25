@@ -51,7 +51,17 @@ public class Player : MonoBehaviour {
 					rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
 				}
 			}
-
+			
+			// Decrease the velocity in other directions
+//			rigid.velocity = trans.forward * rigid.velocity.magnitude;
+			
+			// Increase slowdown rate
+//			if (turn == 1 || turn == -1) {
+//				// Moving	
+//			} else {
+//				// Shouldn't Be Moving (slowdown by a lot)
+//				rigid.velocity *= 
+//			}
 		}
 	}
 	
