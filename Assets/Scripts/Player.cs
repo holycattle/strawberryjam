@@ -2,6 +2,9 @@ using UnityEngine;
 using System.Collections;
 
 public class Player : MonoBehaviour {
+	const float MIN_SPEED = 1f;
+	const float MAX_SPEED = 4f;
+	
 	
 	private float rotationSpeed = 180;
 	private float moveSpeed = 16f;
@@ -24,7 +27,21 @@ public class Player : MonoBehaviour {
 			
 			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
 			
-			rigid.AddForce(transform.forward * move * moveSpeed * moveSpeedMultiplier);
+			if(Input.GetKey(KeyCode.Space)) {
+				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
+				if(rigid.velocity.magnitude > MAX_SPEED) {
+					rigid.velocity = rigid.velocity.normalized * MAX_SPEED;
+				}
+				Debug.Log("Accelerating: " + rigid.velocity.ToString());
+			} else {
+				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
+				if(rigid.velocity.magnitude > MIN_SPEED) {
+					rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
+				}
+				Debug.Log(rigid.velocity.ToString());
+			}
+//			velocity = Vector3.forward * move * moveSpeed * moveSpeedMultiplier * Time.fixedDeltaTime;
+//			trans.Translate(velocity);
 		}
 	}
 	
