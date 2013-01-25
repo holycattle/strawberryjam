@@ -13,6 +13,7 @@ public class Player : MonoBehaviour {
 	private float moveSpeedMultiplier = 1f;
 	
 	public bool controllable = false;
+	public bool AIcontrollable = false;
 	
 	private Transform trans;
 	private Rigidbody rigid;
@@ -31,14 +32,22 @@ public class Player : MonoBehaviour {
 	}
 	
 	void FixedUpdate () {
-		
-		
+		float turn = 0;
+		float move = 0;
 		if (controllable) {
-			float turn = Input.GetAxis("Horizontal");
-			float move = Input.GetAxis("Vertical");
+			turn = Input.GetAxis("Horizontal");
+			move = Input.GetAxis("Vertical");
+		}
+		if (AIcontrollable) {
+			// AI
+			turn = 0.4f;
+			move = 1f;
+		}
 			
+		if (turn != 0) {
 			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
-			
+		}
+		if (move != 0) {
 			if(Input.GetKey(KeyCode.Space)) {
 				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
 				if(rigid.velocity.magnitude > MAX_SPEED) {
@@ -53,6 +62,7 @@ public class Player : MonoBehaviour {
 					rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
 				}
 			}
+		}
 			
 			// Decrease the velocity in other directions
 //			rigid.velocity = trans.forward * rigid.velocity.magnitude;
@@ -64,7 +74,6 @@ public class Player : MonoBehaviour {
 //				// Shouldn't Be Moving (slowdown by a lot)
 //				rigid.velocity *= 
 //			}
-		}
 	}
 	
 	void OnCollisionEnter(Collision c) {
