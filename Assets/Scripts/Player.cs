@@ -2,20 +2,31 @@ using UnityEngine;
 using System.Collections;
 
 public class Player : MonoBehaviour {
-	const float MIN_SPEED = 1f;
-	const float MAX_SPEED = 4f;
+	const float MIN_SPEED = 4f;
+	const float MAX_SPEED = 8f;
 	const float FAT_CONSUMPTIONRATE = 1f;
 	
 	const float MIN_FAT = 1f;
 	const float MAX_FAT = 10f;
-	
-	public float fatness;
 	
 	private float rotationSpeed = 180;
 	private float moveSpeed = 16f;
 	private float moveSpeedMultiplier = 1f;
 	
 	public bool controllable = false;
+	public bool AIcontrollable = false;
+	
+	public float knockbackMultiplier = 1f;
+	public float knockbackResistor = 1f;
+	
+	public float fatness;
+	private float heartbeatInterval = 0.8f;
+	private float heartbeatTimer;
+	private AudioSource heartbeat = new AudioSource();
+	private float stunRemaining;
+	
+//	public Player lastTouch;
+//	public float sinceTouch;
 	
 	private Transform trans;
 	private Rigidbody rigid;
@@ -24,7 +35,8 @@ public class Player : MonoBehaviour {
 		trans = transform;
 		rigid = rigidbody;
 		
-		fatness = 1f;
+		heartbeatTimer = heartbeatInterval;
+		fatness = 5;
 	}
 	
 	void OnGUI() {
@@ -33,16 +45,31 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
+	void Update() {
+		heartbeatTimer -= Time.deltaTime;
+		if (heartbeatTimer <= 0) {
+			heartbeatTimer += heartbeatTimer;	
+		}
+	}
+	
 	void FixedUpdate () {
-		
-		
+		float turn = 0;
+		float move = 0;
 		if (controllable) {
-			float turn = Input.GetAxis("Horizontal");
-			float move = Input.GetAxis("Vertical");
+			turn = Input.GetAxis("Horizontal");
+			move = Input.GetAxis("Vertical");
+		}
+		if (AIcontrollable) {
+			// AI
+			turn = 0.5f;
+			move = 1f;
+		}
 			
+		if (turn != 0) {
 			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
-			
-			if(Input.GetKey(KeyCode.Space)) {
+		}
+		if (move != 0) {
+			if(Input.GetKey(KeyCode.Space) && controllable || AIcontrollable) {
 				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
 				if(rigid.velocity.magnitude > MAX_SPEED) {
 					rigid.velocity = rigid.velocity.normalized * MAX_SPEED;
@@ -57,18 +84,14 @@ public class Player : MonoBehaviour {
 					rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
 				}
 			}
-
 		}
 	}
 	
 	void OnCollisionEnter(Collision c) {
 		if (c.gameObject.tag == "Player") {
 			Debug.Log("Coll: " + gameObject.name);
-//			if (controllable)
-				Debug.Log("RBV: " + rigid.velocity.x + ", " + rigid.velocity.y + ", " + rigid.velocity.z);
-			c.rigidbody.velocity += rigid.velocity;
-//			rigid.AddForce(-rigid.velocity * 256);
-	//		rigid.velocity = -rigid.velocity;
+			Player p = c.gameObject.GetComponent<Player>();
+			c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");	
 			fatness += c.gameObject.GetComponent<Item>().fat;
