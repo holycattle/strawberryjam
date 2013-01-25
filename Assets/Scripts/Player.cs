@@ -31,6 +31,8 @@ public class Player : MonoBehaviour {
 	}
 	
 	void FixedUpdate () {
+		
+		
 		if (controllable) {
 			float turn = Input.GetAxis("Horizontal");
 			float move = Input.GetAxis("Vertical");
@@ -75,7 +77,7 @@ public class Player : MonoBehaviour {
 	//		rigid.velocity = -rigid.velocity;
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");	
-			fatness += c.gameObject.GetComponent<Item>().fatness;
+			fatness += c.gameObject.GetComponent<Item>().fat;
 			Destroy(c.gameObject);
 		}
 	}

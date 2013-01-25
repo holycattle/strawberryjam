@@ -3,5 +3,6 @@
 *.pidb
 *.csproj
 *.unityproj
+*.DS_Store
 Library/
 Temp/
