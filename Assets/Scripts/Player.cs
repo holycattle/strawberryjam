@@ -9,8 +9,6 @@ public class Player : MonoBehaviour {
 	
 	public bool controllable = false;
 	
-	private Vector3 velocity;
-	
 	private Transform trans;
 	private Rigidbody rigid;
 	
@@ -27,15 +25,17 @@ public class Player : MonoBehaviour {
 			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
 			
 			rigid.AddForce(transform.forward * move * moveSpeed * moveSpeedMultiplier);
-			
-//			velocity = Vector3.forward * move * moveSpeed * moveSpeedMultiplier * Time.fixedDeltaTime;
-//			trans.Translate(velocity);
 		}
 	}
 	
 	void OnCollisionEnter(Collision c) {
-//		rigid.AddForce(-rigid.velocity.normalized * 100);
-//		rigid.velocity = -rigid.velocity;
-		Debug.Log("Coll: " + gameObject.name);
+		if (c.gameObject.tag == "Player") {
+			Debug.Log("Coll: " + gameObject.name);
+//			if (controllable)
+				Debug.Log("RBV: " + rigid.velocity.x + ", " + rigid.velocity.y + ", " + rigid.velocity.z);
+			c.rigidbody.velocity += rigid.velocity;
+//			rigid.AddForce(-rigid.velocity * 256);
+	//		rigid.velocity = -rigid.velocity;
+		}
 	}
 }
