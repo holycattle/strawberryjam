@@ -10,7 +10,7 @@ public class Player : MonoBehaviour {
 	const float NORMAL_HEART = 1f;
 	const float HEART_SPEED_INC = 0.1f;
 	const float HEART_SPEED_MIN = 0.4f;
-	const float STUN_DURATION = 1f;
+	const float STUN_DURATION = 2f;
 	
 	const float MIN_FAT = 1f;
 	const float MAX_FAT = 10f;
@@ -25,6 +25,7 @@ public class Player : MonoBehaviour {
 	public float knockbackMultiplier = 5f;
 	public float knockbackResistor = 1f;
 	
+	public GameObject stunParticle;
 	public float fatness;
 	private float heartbeatInterval = 1f;
 	private float heartbeatTimer;
@@ -61,7 +62,6 @@ public class Player : MonoBehaviour {
 				heartbeatTimer += heartbeatInterval;
 			}
 		}
-		
 	}
 	
 	void FixedUpdate () {
@@ -73,10 +73,15 @@ public class Player : MonoBehaviour {
 		}
 		if (AIcontrollable) {
 			// AI
-			turn = 0.5f;
+			turn = 0.75f;
 			move = 1f;
 		}
-			
+		
+		if (stunRemaining > 0) {
+			stunRemaining -= Time.fixedDeltaTime;
+			move = 0;
+		}
+		
 		if (turn != 0) {
 			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
 		}
@@ -107,6 +112,8 @@ public class Player : MonoBehaviour {
 	}
 	
 	private void maxHeartbeatReached() {
+		Debug.Log("Heart Attack!");
+		Instantiate(stunParticle, transform.position + Vector3.up * 1, Quaternion.identity);
 		stunRemaining = STUN_DURATION; //TODO: add fat
 	}
 	
