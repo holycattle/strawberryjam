@@ -48,7 +48,7 @@ public class GameMode : MonoBehaviour {
 				break;
 			}
 		}
-		GameObject playerPrefab = Resources.Load ("prefabs/P1") as GameObject;
+		GameObject playerPrefab = Resources.Load ("prefabs/P" + (Networking.myId + 1)) as GameObject;
 		
 		// create the players
 		players = new List<Player>();
