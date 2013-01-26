@@ -23,7 +23,7 @@ public class Title : MonoBehaviour
 	
 	void StartServer ()
 	{
-		Network.incomingPassword = serverPassword;
+		//Network.incomingPassword = serverPassword;
 		Network.InitializeServer (32, serverPort, false);
 		
 		Networking.isServer = true;
@@ -34,7 +34,7 @@ public class Title : MonoBehaviour
 	
 	void StartConnect ()
 	{
-		Network.Connect (serverAddress, serverPort, serverPassword);
+		Network.Connect (serverAddress, serverPort);
 		Networking.isServer = false;
 		connectState = ConnectState.CONNECTING;
 	}
