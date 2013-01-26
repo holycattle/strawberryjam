@@ -48,12 +48,13 @@ public class GameMode : MonoBehaviour {
 				break;
 			}
 		}
-		GameObject playerPrefab = Resources.Load ("prefabs/P1") as GameObject;
+		
 		
 		// create the players
 		players = new List<Player>();
 		for (int i = 0; i < nPlayers; ++i) {
 			float theta = 2*Mathf.PI/nPlayers * i;
+			GameObject playerPrefab = Resources.Load ("prefabs/P" + (i + 1)) as GameObject;
 			GameObject player = Instantiate (playerPrefab,
 				(new Vector3(Mathf.Cos (theta), 1, Mathf.Sin (theta))),
 				Quaternion.identity) as GameObject;

@@ -9,7 +9,7 @@ public class SimpleCollider : MonoBehaviour
 	public void Start(){
 		Transform t = gameObject.GetComponent<Transform>();
 		this.position = t.position;
-		this.radius = 0.30f;
+		this.radius = 0.50f;
 		this.collided = new HashSet<SimpleCollider>();
 		
 		GameObject go = GameObject.FindGameObjectWithTag("GameController");
