@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 	const float MIN_SPEED = 5f;
-	const float MAX_SPEED = 10f;
+	const float MAX_SPEED = 20f;
 	const float FAT_CONSUMPTIONRATE = 0.2f;
 	
 	// Heart Constants
@@ -15,10 +15,6 @@ public class Player : MonoBehaviour {
 	
 	const float MIN_FAT = 3f;
 	const float MAX_FAT = 10f;
-	
-	private float rotationSpeed = 180;
-	private float moveSpeed = MIN_SPEED;
-	private float moveSpeedMultiplier = 1f;
 	
 	public int activeDirection = 0;
 	
@@ -36,25 +32,38 @@ public class Player : MonoBehaviour {
 	private AudioSource heartbeat;
 	private float stunRemaining;
 	
-	public Score score;
-	
-	public string name;
 	
 	public Player lastTouch;
 	public float sinceTouch;
 	
-	private Transform trans;
-	private Rigidbody rigid;
+	private bool attacked;
+	public double distance;
+	
+	public enum State {WAITING, CHARGING, SHOVING, PUSHED};
+	public State status;
+	
+	public Score score;
+	
+	public Vector3 position
+	{
+		get{ return this.transform.position; }
+		set{ this.transform.position = position; }
+	}
+	public Vector3 velocity;
 	
 	void Start () {
-		trans = transform;
-		rigid = rigidbody;
+		GameObject go = GameObject.FindGameObjectWithTag("GameController");
+		MovementEngine engine = go.GetComponent<MovementEngine>();
+		engine.Register(this);
 		
 		audio.Play();
 		heartbeatTimer = heartbeatInterval;
 		fatness = 5;
-		rigid.mass = fatness;
-
+		
+		knockbackMultiplier = fatness * knockbackMultiplier * KNOCKBACK_FACTOR;
+		knockbackResistor = fatness * knockbackResistor * KNOCKBACK_FACTOR;
+		status = State.WAITING;
+		
 		score = new Score(this.gameObject);
 	}
 	
@@ -97,12 +106,12 @@ public class Player : MonoBehaviour {
 		}
 		
 		if (controllable) {
-			Vector3 direction = Utils.mousePosition() - rigid.position;
+			Vector3 direction = Utils.MousePosition() - rigidbody.position;
 			direction.y = 0;
 			direction = direction/direction.magnitude;
 
 			if(Input.GetKey ( KeyCode.Space ) ){
-				rigid.velocity = direction * move * MAX_SPEED / rigid.mass;
+				rigidbody.velocity = direction * move * MAX_SPEED / rigidbody.mass;
 				
 				// Lose weight
 				decreaseFat();
@@ -111,26 +120,28 @@ public class Player : MonoBehaviour {
 				increaseHeartbeat(false);
 
 			} else {
-				rigid.velocity = direction * move * MIN_SPEED / rigid.mass;
+				rigidbody.velocity = direction * move * MIN_SPEED / rigidbody.mass;
 
 				increaseHeartbeat(true); //rest
 			}
 			Quaternion temp = Quaternion.LookRotation(direction);
-			rigid.rotation = temp;
+			rigidbody.rotation = temp;
 			
 //			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
-			if (trans.rotation.eulerAngles.y < 0) {
-				trans.rotation = Quaternion.Euler(trans.rotation.eulerAngles.x, trans.rotation.eulerAngles.y + 360, trans.rotation.eulerAngles.z);
+			if (transform.rotation.eulerAngles.y < 0) {
+				transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 
+					transform.rotation.eulerAngles.y + 360, transform.rotation.eulerAngles.z);
 			}
-			if (trans.rotation.eulerAngles.y > 360) {
-				trans.rotation = Quaternion.Euler(trans.rotation.eulerAngles.x, trans.rotation.eulerAngles.y - 360, trans.rotation.eulerAngles.z);
+			if (transform.rotation.eulerAngles.y > 360) {
+				transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 
+					transform.rotation.eulerAngles.y - 360, transform.rotation.eulerAngles.z);
 			}
 			
-			activeDirection = ((int) (trans.rotation.eulerAngles.y + 22.5f) / 45) % 8;
+			activeDirection = ((int) (transform.rotation.eulerAngles.y + 22.5f) / 45) % 8;
 		} else if (move != 0) { //if moving
 			//if running
 			if((Input.GetKey(KeyCode.Space) && controllable) || AIcontrollable) {
-				rigid.velocity = transform.forward * move * MAX_SPEED / rigid.mass;
+				rigidbody.velocity = transform.forward * move * MAX_SPEED / rigidbody.mass;
 				
 				// Lose weight
 				decreaseFat();
@@ -139,14 +150,57 @@ public class Player : MonoBehaviour {
 				increaseHeartbeat(false);
 				
 			} else {
-				rigid.velocity = transform.forward * move * MIN_SPEED / rigid.mass;
+				rigidbody.velocity = transform.forward * move * MIN_SPEED / rigidbody.mass;
 
 				increaseHeartbeat(true); //rest
 			}
-			
-		} else {
-			increaseHeartbeat(true); //rest
 		}
+		
+		if(status == State.WAITING){
+			if(distance < 0){
+				velocity = Vector3.zero;
+			}
+		}else if(status == State.CHARGING){
+			//For each other player, see if they should be pushed back.
+			if(distance <= 0){
+				status = State.WAITING;
+				velocity = Vector3.zero;
+			}
+		}else if(status == State.SHOVING){
+			//For each other player, see if they should be pushed back.
+			if(true){
+				status = State.WAITING;
+			}
+		}else if(status == State.PUSHED){
+			if(distance <= 0){
+				status = State.WAITING;
+				velocity = Vector3.zero;
+			}
+		}
+	}
+	
+	public void MoveForward(Vector3 unitVector){
+		if(status == State.WAITING){
+			velocity = unitVector * MIN_SPEED;
+			distance = 0.01;
+		}
+	}
+	public void Charge(Vector3 unitVector){
+		if(status == State.WAITING){
+			velocity = unitVector * MAX_SPEED;
+			status = State.CHARGING;
+			distance = 5;
+		}
+	}
+	public void Shove(Vector3 unitVector){
+		if(status == State.WAITING){
+			velocity = Vector3.zero;
+			status = State.SHOVING;
+		}
+	}
+	public void RotateTowards(Vector3 vector){
+		transform.rotation = Quaternion.LookRotation(vector);
+		activeDirection = ((int) (transform.rotation.eulerAngles.y + 22.5f) / 45) % 8;
 	}
 	
 	private void maxHeartbeatReached() {
@@ -166,7 +220,6 @@ public class Player : MonoBehaviour {
 	
 	private void increaseFat(float fat) {
 		fatness += fat;
-		rigid.mass = fatness;
 		
 		knockbackMultiplier = fatness * knockbackMultiplier * 0.5f;
 		knockbackResistor = fatness * knockbackResistor * 0.5f;
@@ -176,7 +229,6 @@ public class Player : MonoBehaviour {
 		// Subtract Fat if fat > 1
 		if(fatness > 1f) {
 			fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
-			rigid.mass = fatness;
 		}
 		
 		if(knockbackMultiplier > 1f) {
@@ -192,18 +244,52 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	void OnCollisionEnter(Collision c) {
+	void OnTriggerEnter(Collider c) {
+		Debug.Log("hi");
+		/*
 		if (c.gameObject.tag == "Player") {
 			Debug.Log("Coll: " + gameObject.name);
 			Player p = c.gameObject.GetComponent<Player>();
 			//c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
 			lastTouch = p;
-			
 			sinceTouch = 6f;
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");
 			increaseFat(c.gameObject.GetComponent<Item>().fat);
 			Destroy(c.gameObject);
 		}
+		*/
+	}
+	void OnColliderEnter(Collider c) {
+		Debug.Log("collider");
+		/*
+		if (c.gameObject.tag == "Player") {
+			Debug.Log("Coll: " + gameObject.name);
+			Player p = c.gameObject.GetComponent<Player>();
+			//c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
+			lastTouch = p;
+			sinceTouch = 6f;
+		} else if (c.gameObject.tag == "Food") {
+			Debug.Log("Food!");
+			increaseFat(c.gameObject.GetComponent<Item>().fat);
+			Destroy(c.gameObject);
+		}
+		*/
+	}
+	void OnCollisionEnter(Collision c) {
+		Debug.Log("collision");
+		/*
+		if (c.gameObject.tag == "Player") {
+			Debug.Log("Coll: " + gameObject.name);
+			Player p = c.gameObject.GetComponent<Player>();
+			//c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
+			lastTouch = p;
+			sinceTouch = 6f;
+		} else if (c.gameObject.tag == "Food") {
+			Debug.Log("Food!");
+			increaseFat(c.gameObject.GetComponent<Item>().fat);
+			Destroy(c.gameObject);
+		}
+		*/
 	}
 }
