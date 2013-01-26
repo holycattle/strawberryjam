@@ -82,15 +82,12 @@ public class Player : MonoBehaviour {
 	}
 	
 	void FixedUpdate () {
-		float turn = 0;
 		float move = 0;
 		if (controllable) {
-			turn = Input.GetAxis("Horizontal");
 			move = Input.GetAxis("Vertical");
 		}
 		if (AIcontrollable) {
 			// AI
-			turn = (Random.Range(0, 1) == 0 ? -1 : 1) * Random.Range(0.5f, 0.75f);
 			move = 1f;
 		}
 		
@@ -99,20 +96,6 @@ public class Player : MonoBehaviour {
 			move = 0;
 		}
 		
-		if (turn != 0) {
-			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
-			if (trans.rotation.eulerAngles.y < 0) {
-				trans.rotation = Quaternion.Euler(trans.rotation.eulerAngles.x, trans.rotation.eulerAngles.y + 360, trans.rotation.eulerAngles.z);
-			}
-			if (trans.rotation.eulerAngles.y > 360) {
-				trans.rotation = Quaternion.Euler(trans.rotation.eulerAngles.x, trans.rotation.eulerAngles.y - 360, trans.rotation.eulerAngles.z);
-			}
-			
-			activeDirection = ((int) (trans.rotation.eulerAngles.y + 22.5f) / 45) % 8;
-			
-			if (controllable)
-				Debug.Log("Acd: " +activeDirection);
-		}
 		if (controllable) {
 			Vector3 direction = Utils.mousePosition() - rigid.position;
 			direction.y = 0;
@@ -127,13 +110,23 @@ public class Player : MonoBehaviour {
 				// Increase Heart Rate
 				increaseHeartbeat(false);
 
-			}else{
+			} else {
 				rigid.velocity = direction * move * MIN_SPEED / rigid.mass;
 
 				increaseHeartbeat(true); //rest
 			}
-			Quaternion temp = Quaternion.LookRotation (direction);
+			Quaternion temp = Quaternion.LookRotation(direction);
 			rigid.rotation = temp;
+			
+//			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
+			if (trans.rotation.eulerAngles.y < 0) {
+				trans.rotation = Quaternion.Euler(trans.rotation.eulerAngles.x, trans.rotation.eulerAngles.y + 360, trans.rotation.eulerAngles.z);
+			}
+			if (trans.rotation.eulerAngles.y > 360) {
+				trans.rotation = Quaternion.Euler(trans.rotation.eulerAngles.x, trans.rotation.eulerAngles.y - 360, trans.rotation.eulerAngles.z);
+			}
+			
+			activeDirection = ((int) (trans.rotation.eulerAngles.y + 22.5f) / 45) % 8;
 		} else if (move != 0) { //if moving
 			//if running
 			if((Input.GetKey(KeyCode.Space) && controllable) || AIcontrollable) {
@@ -154,13 +147,9 @@ public class Player : MonoBehaviour {
 		} else {
 			increaseHeartbeat(true); //rest
 		}
-		
-		
-		if (name == "Me") Debug.Log(name + ": " + rigid.velocity.magnitude.ToString());
 	}
 	
 	private void maxHeartbeatReached() {
-		Debug.Log("Heart Attack!");
 		Instantiate(stunParticle, transform.position + Vector3.up * 1, Quaternion.identity);
 		stunRemaining = STUN_DURATION; //TODO: add fat
 	}
