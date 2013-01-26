@@ -84,6 +84,7 @@ public class Player : MonoBehaviour {
 	void FixedUpdate () {
 		float turn = 0;
 		float move = 0;
+		float speedBuffer = 0;
 		if (controllable) {
 			turn = Input.GetAxis("Horizontal");
 			move = Input.GetAxis("Vertical");
@@ -119,7 +120,7 @@ public class Player : MonoBehaviour {
 			direction = direction/direction.magnitude;
 
 			if(Input.GetKey ( KeyCode.Space ) ){
-				rigid.velocity = direction * move * MAX_SPEED / rigid.mass;
+				speedBuffer += (MAX_SPEED / rigid.mass) * Time.deltaTime;
 				
 				// Lose weight
 				decreaseFat();
@@ -137,10 +138,9 @@ public class Player : MonoBehaviour {
 		} else if (move != 0) { //if moving
 			//if running
 			if((Input.GetKey(KeyCode.Space) && controllable) || AIcontrollable) {
-				rigid.velocity = transform.forward * move * MAX_SPEED / rigid.mass;
+				//rigid.velocity = transform.forward * move * MAX_SPEED / rigid.mass;
+				moveOverTime(new Vector3();
 				
-				// Lose weight
-				decreaseFat();
 				
 				// Increase Heart Rate
 				increaseHeartbeat(false);
@@ -157,6 +157,19 @@ public class Player : MonoBehaviour {
 		
 		
 		if (name == "Me") Debug.Log(name + ": " + rigid.velocity.magnitude.ToString());
+	}
+	
+	public void moveOverTime(Vector3 d, float t) {
+		float rate = 1.0f/t;
+		float i = 0f;
+		Vector3 endPos = this.transform.position + d;
+		
+		while(i < 1.0f) {
+			this.transform.position = Vector3.Lerp(this.transform.position, endPos, i);
+			i += rate * Time.deltaTime;
+		}
+		
+		this.transform.position = endPosition;
 	}
 	
 	private void maxHeartbeatReached() {
