@@ -5,6 +5,8 @@ public class Player : MonoBehaviour {
 	const float MIN_SPEED = 4f;
 	const float MAX_SPEED = 8f;
 	const float FAT_CONSUMPTIONRATE = 1f;
+	const float NORMAL_HEART = 1f;
+	const float HEART_SPEED_INC = 0.1f;
 	
 	const float MIN_FAT = 1f;
 	const float MAX_FAT = 10f;
@@ -20,9 +22,9 @@ public class Player : MonoBehaviour {
 	public float knockbackResistor = 1f;
 	
 	public float fatness;
-	private float heartbeatInterval = 0.8f;
+	private float heartbeatInterval = 1f;
 	private float heartbeatTimer;
-	private AudioSource heartbeat = new AudioSource();
+	private AudioSource heartbeat;
 	private float stunRemaining;
 	
 //	public Player lastTouch;
@@ -35,6 +37,7 @@ public class Player : MonoBehaviour {
 		trans = transform;
 		rigid = rigidbody;
 		
+		audio.Play();
 		heartbeatTimer = heartbeatInterval;
 		fatness = 5;
 	}
@@ -46,9 +49,12 @@ public class Player : MonoBehaviour {
 	}
 	
 	void Update() {
-		heartbeatTimer -= Time.deltaTime;
-		if (heartbeatTimer <= 0) {
-			heartbeatTimer += heartbeatTimer;	
+		if (controllable) {
+			heartbeatTimer -= Time.deltaTime;
+			if (heartbeatTimer <= 0) {
+				audio.Play();
+				heartbeatTimer += heartbeatInterval;
+			}
 		}
 	}
 	
@@ -75,6 +81,11 @@ public class Player : MonoBehaviour {
 					rigid.velocity = rigid.velocity.normalized * MAX_SPEED;
 				}
 				
+				// Subtract Fat
+				fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
+				
+				// Increase Heart Rate
+				heartbeatInterval -= HEART_SPEED_INC * Time.fixedDeltaTime;
 				// Subtract Fat if fat > 0
 				if(fatness > 1f)
 					fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
@@ -83,6 +94,12 @@ public class Player : MonoBehaviour {
 				if(rigid.velocity.magnitude > MIN_SPEED) {
 					rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
 				}
+			}
+		} else {
+			// Rest
+			heartbeatInterval += HEART_SPEED_INC * Time.fixedDeltaTime;
+			if (heartbeatInterval > NORMAL_HEART) {
+				heartbeatInterval = NORMAL_HEART;	
 			}
 		}
 	}
