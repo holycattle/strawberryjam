@@ -75,21 +75,18 @@ public class Player : MonoBehaviour {
 			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
 		}
 		if (move != 0) {
+			//if running
 			if(Input.GetKey(KeyCode.Space) && controllable || AIcontrollable) {
 				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
 				if(rigid.velocity.magnitude > MAX_SPEED) {
 					rigid.velocity = rigid.velocity.normalized * MAX_SPEED;
 				}
 				
-				// Subtract Fat
-				fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
+				decreaseFat();
 				
 				// Increase Heart Rate
 				heartbeatInterval -= HEART_SPEED_INC * Time.fixedDeltaTime;
-				// Subtract Fat if fat > 0
-				if(fatness > 1f) {
-					fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
-				}
+
 			} else {
 				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
 				if(rigid.velocity.magnitude > MIN_SPEED) {
@@ -110,6 +107,19 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
+	private void increaseFat() {
+		// Subtract Fat if fat > 1
+		if(fatness > 1f) {
+			fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
+			rigid.mass = fatness;
+		}
+	}
+	
+	private void decreaseFat() {
+		fatness += c.gameObject.GetComponent<Item>().fat;
+		rigid.mass = fatness;
+	}
+	
 	void OnCollisionEnter(Collision c) {
 		if (c.gameObject.tag == "Player") {
 			Debug.Log("Coll: " + gameObject.name);
@@ -117,8 +127,7 @@ public class Player : MonoBehaviour {
 			c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");	
-			fatness += c.gameObject.GetComponent<Item>().fat;
-			rigid.mass = fatness;
+			increaseFat();
 			Destroy(c.gameObject);
 		}
 	}
