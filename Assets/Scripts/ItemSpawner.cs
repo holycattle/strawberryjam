@@ -11,13 +11,15 @@ public class ItemSpawner : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		_timePassed += Time.deltaTime;
-		if (_timePassed >= FOOD_INTERVAL) {
-			_timePassed -= FOOD_INTERVAL;
-			
-			Vector3 v = new Vector3(Random.Range(-MAP_SIZE / 2, MAP_SIZE/2), 1, Random.Range(-MAP_SIZE / 2, MAP_SIZE/2));
-			
-			GameObject g = Instantiate(food, v, Quaternion.identity) as GameObject;
+		if (GameMode.gameStarted) {
+			_timePassed += Time.deltaTime;
+			if (_timePassed >= FOOD_INTERVAL) {
+				_timePassed -= FOOD_INTERVAL;
+				
+				Vector3 v = new Vector3(Random.Range(-MAP_SIZE / 2, MAP_SIZE/2), 1, Random.Range(-MAP_SIZE / 2, MAP_SIZE/2));
+				
+				GameObject g = Instantiate(food, v, Quaternion.identity) as GameObject;
+			}
 		}
 	}
 }

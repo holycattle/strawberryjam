@@ -23,7 +23,6 @@ public class Title : MonoBehaviour
 	
 	void StartServer ()
 	{
-		//Network.incomingPassword = serverPassword;
 		Network.InitializeServer (32, serverPort, false);
 		connectState = ConnectState.STARTING;
 	}
@@ -40,8 +39,9 @@ public class Title : MonoBehaviour
 	}
 	
 	void OnServerInitialized() {
-		Networking.players.Add (Network.player);
-		Networking.server = Network.player;
+		Networking.nPlayers = 0;
+		Networking.players[Networking.nPlayers++] = Network.player;
+		GameMode.nConnected = 0;
 		Application.LoadLevel ("Wait");	
 	}
 	
