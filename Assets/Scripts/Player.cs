@@ -113,7 +113,28 @@ public class Player : MonoBehaviour {
 			if (controllable)
 				Debug.Log("Acd: " +activeDirection);
 		}
-		if (move != 0) { //if moving
+		if (controllable) {
+			Vector3 direction = Utils.mousePosition() - rigid.position;
+			direction.y = 0;
+			direction = direction/direction.magnitude;
+
+			if(Input.GetKey ( KeyCode.Space ) ){
+				rigid.velocity = direction * move * MAX_SPEED / rigid.mass;
+				
+				// Lose weight
+				decreaseFat();
+				
+				// Increase Heart Rate
+				increaseHeartbeat(false);
+
+			}else{
+				rigid.velocity = direction * move * MIN_SPEED / rigid.mass;
+
+				increaseHeartbeat(true); //rest
+			}
+			Quaternion temp = Quaternion.LookRotation (direction);
+			rigid.rotation = temp;
+		} else if (move != 0) { //if moving
 			//if running
 			if((Input.GetKey(KeyCode.Space) && controllable) || AIcontrollable) {
 				rigid.velocity = transform.forward * move * MAX_SPEED / rigid.mass;
