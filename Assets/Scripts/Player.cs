@@ -85,7 +85,7 @@ public class Player : MonoBehaviour {
 		}
 		if (AIcontrollable) {
 			// AI
-			turn = 0.75f;
+			turn = (Random.Range(0, 1) == 0 ? -1 : 1) * Random.Range(0.5f, 0.75f);
 			move = 1f;
 		}
 		
@@ -173,6 +173,7 @@ public class Player : MonoBehaviour {
 			Player p = c.gameObject.GetComponent<Player>();
 			//c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
 			lastTouch = p;
+			sinceTouch = 6f;
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");
 			increaseFat(c.gameObject.GetComponent<Item>().fat);
