@@ -87,20 +87,26 @@ public class Player : MonoBehaviour {
 				// Increase Heart Rate
 				heartbeatInterval -= HEART_SPEED_INC * Time.fixedDeltaTime;
 				// Subtract Fat if fat > 0
-				if(fatness > 1f)
+				if(fatness > 1f) {
 					fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
+				}
 			} else {
 				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
 				if(rigid.velocity.magnitude > MIN_SPEED) {
 					rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
 				}
+				recoverHeart(); //rest
 			}
 		} else {
-			// Rest
-			heartbeatInterval += HEART_SPEED_INC * Time.fixedDeltaTime;
-			if (heartbeatInterval > NORMAL_HEART) {
-				heartbeatInterval = NORMAL_HEART;	
-			}
+			recoverHeart(); //rest
+		}
+	}
+	
+	private void recoverHeart() {
+		// Rest
+		heartbeatInterval += HEART_SPEED_INC * Time.fixedDeltaTime;
+		if (heartbeatInterval > NORMAL_HEART) {
+			heartbeatInterval = NORMAL_HEART;
 		}
 	}
 	
