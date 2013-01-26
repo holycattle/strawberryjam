@@ -8,7 +8,8 @@ public class Player : MonoBehaviour {
 	
 	// Heart Constants
 	const float NORMAL_HEART = 1f;
-	const float HEART_SPEED_INC = 0.1f;
+	float heartspeedIncrease = 0.1f;
+	float heartspeedDecrease = 0.1f;
 	const float HEART_SPEED_MIN = 0.4f;
 	const float STUN_DURATION = 2f;
 	
@@ -118,12 +119,12 @@ public class Player : MonoBehaviour {
 	}
 	
 	private void increaseHeartbeat(bool increase) {
-		heartbeatInterval += HEART_SPEED_INC * Time.fixedDeltaTime * (increase ? 1 : -1);
+		heartbeatInterval += heartspeedIncrease * Time.fixedDeltaTime * (increase ? 1 : -1);
 		if (heartbeatInterval <= HEART_SPEED_MIN) {
 			maxHeartbeatReached();
 			heartbeatInterval = HEART_SPEED_MIN;	
 		} else if (heartbeatInterval > NORMAL_HEART) {
-			heartbeatInterval = NORMAL_HEART;	
+			heartbeatInterval = NORMAL_HEART;
 		}
 	}
 	
