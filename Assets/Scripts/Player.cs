@@ -34,8 +34,8 @@ public class Player : MonoBehaviour {
 	private AudioSource heartbeat;
 	private float stunRemaining;
 	
-//	public Player lastTouch;
-//	public float sinceTouch;
+	public Player lastTouch;
+	public float sinceTouch;
 	
 	private Transform trans;
 	private Rigidbody rigid;
@@ -65,6 +65,13 @@ public class Player : MonoBehaviour {
 			if (heartbeatTimer <= 0) {
 				audio.Play();
 				heartbeatTimer += heartbeatInterval;
+			}
+		}
+		
+		if (sinceTouch > 0) {
+			sinceTouch -= Time.deltaTime;
+			if (sinceTouch <= 0) {
+				lastTouch = null;	
 			}
 		}
 	}
@@ -165,6 +172,7 @@ public class Player : MonoBehaviour {
 			Debug.Log("Coll: " + gameObject.name);
 			Player p = c.gameObject.GetComponent<Player>();
 			//c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
+			lastTouch = p;
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");
 			increaseFat(c.gameObject.GetComponent<Item>().fat);
