@@ -18,7 +18,7 @@ public class Player : MonoBehaviour {
 	public bool controllable = false;
 	public bool AIcontrollable = false;
 	
-	public float knockbackMultiplier = 1f;
+	public float knockbackMultiplier = 5f;
 	public float knockbackResistor = 1f;
 	
 	public float fatness;
@@ -40,6 +40,7 @@ public class Player : MonoBehaviour {
 		audio.Play();
 		heartbeatTimer = heartbeatInterval;
 		fatness = 5;
+		rigid.mass = fatness;
 	}
 	
 	void OnGUI() {
@@ -56,6 +57,7 @@ public class Player : MonoBehaviour {
 				heartbeatTimer += heartbeatInterval;
 			}
 		}
+		
 	}
 	
 	void FixedUpdate () {
@@ -74,7 +76,7 @@ public class Player : MonoBehaviour {
 		if (turn != 0) {
 			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
 		}
-		if (move != 0) {
+		if (move != 0) { //if moving
 			//if running
 			if(Input.GetKey(KeyCode.Space) && controllable || AIcontrollable) {
 				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
@@ -94,7 +96,7 @@ public class Player : MonoBehaviour {
 				}
 				recoverHeart(); //rest
 			}
-		} else {
+		} else { //if standing
 			recoverHeart(); //rest
 		}
 	}
@@ -127,7 +129,7 @@ public class Player : MonoBehaviour {
 			Player p = c.gameObject.GetComponent<Player>();
 			c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
 		} else if (c.gameObject.tag == "Food") {
-			Debug.Log("Food!");	
+			Debug.Log("Food!");
 			increaseFat(c.gameObject.GetComponent<Item>().fat);
 			Destroy(c.gameObject);
 		}
