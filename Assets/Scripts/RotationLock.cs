@@ -4,7 +4,7 @@ using System.Collections;
 public class RotationLock : MonoBehaviour {
 	
 	private Quaternion lockRot;
-	void Start () {
+	void Awake () {
 		lockRot = transform.rotation;
 	}
 	

@@ -12,12 +12,12 @@ public class ManualController : MonoBehaviour
 		Vector3 vector = Utils.MousePosition() - character.position;
 		vector.y = 0;
 		vector = vector/vector.magnitude;
-		character.RotateTowards(vector);
+		networkView.RPC ("BroadcastRotateTowards", RPCMode.All, vector, Networking.myId);
 		
 		if(Input.GetKeyDown(KeyCode.Space)){
-			character.Charge(vector);
+			networkView.RPC ("BroacastCharge", RPCMode.All, vector, Networking.myId);
 		}else if(Input.GetKeyDown(KeyCode.R)){
-			character.Shove(vector);
+			networkView.RPC ("BroadcastShove", RPCMode.All, vector, Networking.myId);
 		}else{
 			Vector3 result = Vector3.zero;
 			if(Input.GetKey(KeyCode.W)){
@@ -34,7 +34,7 @@ public class ManualController : MonoBehaviour
 			}
 			if(result != Vector3.zero){
 				result /= result.magnitude;
-				character.MoveForward (result);
+				networkView.RPC ("BroadcastMoveForward", RPCMode.All, result, Networking.myId);
 			}
 		}
 		
