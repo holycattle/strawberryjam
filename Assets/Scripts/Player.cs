@@ -5,8 +5,12 @@ public class Player : MonoBehaviour {
 	const float MIN_SPEED = 4f;
 	const float MAX_SPEED = 8f;
 	const float FAT_CONSUMPTIONRATE = 1f;
+	
+	// Heart Constants
 	const float NORMAL_HEART = 1f;
 	const float HEART_SPEED_INC = 0.1f;
+	const float HEART_SPEED_MIN = 0.4f;
+	const float STUN_DURATION = 1f;
 	
 	const float MIN_FAT = 1f;
 	const float MAX_FAT = 10f;
@@ -82,28 +86,35 @@ public class Player : MonoBehaviour {
 					rigid.velocity = rigid.velocity.normalized * MAX_SPEED;
 				}
 				
+				// Lose weight
 				decreaseFat();
 				
 				// Increase Heart Rate
-				heartbeatInterval -= HEART_SPEED_INC * Time.fixedDeltaTime;
-
+				increaseHeartbeat(false);
+				
 			} else {
 				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
 				if(rigid.velocity.magnitude > MIN_SPEED) {
 					rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
 				}
-				recoverHeart(); //rest
+				increaseHeartbeat(true); //rest
 			}
 		} else {
-			recoverHeart(); //rest
+			increaseHeartbeat(true); //rest
 		}
 	}
 	
-	private void recoverHeart() {
-		// Rest
-		heartbeatInterval += HEART_SPEED_INC * Time.fixedDeltaTime;
-		if (heartbeatInterval > NORMAL_HEART) {
-			heartbeatInterval = NORMAL_HEART;
+	private void maxHeartbeatReached() {
+		stunRemaining = STUN_DURATION; //TODO: add fat
+	}
+	
+	private void increaseHeartbeat(bool increase) {
+		heartbeatInterval += HEART_SPEED_INC * Time.fixedDeltaTime * (increase ? 1 : -1);
+		if (heartbeatInterval <= HEART_SPEED_MIN) {
+			maxHeartbeatReached();
+			heartbeatInterval = HEART_SPEED_MIN;	
+		} else if (heartbeatInterval > NORMAL_HEART) {
+			heartbeatInterval = NORMAL_HEART;	
 		}
 	}
 	
@@ -118,7 +129,6 @@ public class Player : MonoBehaviour {
 			fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
 			rigid.mass = fatness;
 		}
-
 	}
 	
 	void OnCollisionEnter(Collision c) {
