@@ -119,8 +119,8 @@ public class Player : MonoBehaviour {
 			direction.y = 0;
 			direction = direction/direction.magnitude;
 
-			if(Input.GetKey ( KeyCode.Space ) ){
-				speedBuffer += (MAX_SPEED / rigid.mass) * Time.deltaTime;
+			if(Input.GetKey ( KeyCode.Space ) && move != 0){
+				rigid.velocity = direction * move * MAX_SPEED / rigid.mass;
 				
 				// Lose weight
 				decreaseFat();
@@ -128,31 +128,13 @@ public class Player : MonoBehaviour {
 				// Increase Heart Rate
 				increaseHeartbeat(false);
 
-			}else{
+			} else if(move != 0) {
 				rigid.velocity = direction * move * MIN_SPEED / rigid.mass;
 
 				increaseHeartbeat(true); //rest
 			}
 			Quaternion temp = Quaternion.LookRotation (direction);
 			rigid.rotation = temp;
-		} else if (move != 0) { //if moving
-			//if running
-			if((Input.GetKey(KeyCode.Space) && controllable) || AIcontrollable) {
-				//rigid.velocity = transform.forward * move * MAX_SPEED / rigid.mass;
-				moveOverTime(new Vector3();
-				
-				
-				// Increase Heart Rate
-				increaseHeartbeat(false);
-				
-			} else {
-				rigid.velocity = transform.forward * move * MIN_SPEED / rigid.mass;
-
-				increaseHeartbeat(true); //rest
-			}
-			
-		} else {
-			increaseHeartbeat(true); //rest
 		}
 		
 		
@@ -169,7 +151,7 @@ public class Player : MonoBehaviour {
 			i += rate * Time.deltaTime;
 		}
 		
-		this.transform.position = endPosition;
+		this.transform.position = endPos;
 	}
 	
 	private void maxHeartbeatReached() {
