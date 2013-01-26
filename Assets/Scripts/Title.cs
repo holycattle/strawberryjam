@@ -18,7 +18,7 @@ public class Title : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		
+		Application.runInBackground = true;
 	}
 	
 	void StartServer ()
