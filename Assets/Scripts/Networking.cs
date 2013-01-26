@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Networking : MonoBehaviour {
 	public static bool isServer = false;
-	public static int nPlayers = 1;
+	public static List<NetworkPlayer> players = new List<NetworkPlayer>();
 	
 	/*void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
 		stream.Serialize (ref nPlayers);

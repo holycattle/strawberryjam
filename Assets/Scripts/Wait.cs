@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
+
 public class Wait : MonoBehaviour {
 	public GUIStyle topLabelStyle;
 	
@@ -9,14 +10,20 @@ public class Wait : MonoBehaviour {
 		
 	}
 	
-	void OnPlayerConnected() {
-		networkView.RPC("PlayerConnected", RPCMode.All);
+	void OnPlayerConnected(NetworkPlayer player) {
+		foreach (NetworkPlayer p in Networking.players) {
+			networkView.RPC ("PlayerConnected", player, p);	
+		}
+		foreach (NetworkPlayer p in Networking.players) {
+			networkView.RPC("PlayerConnected", p, player);	
+		}
+		
 		Debug.Log ("Guy connected!");
 	}
 	
 	[RPC]
-	void PlayerConnected() {
-		++Networking.nPlayers;
+	void PlayerConnected(NetworkPlayer player) {
+		Networking.players.Add (player);
 		Debug.Log ("Got RPC!");
 	}
 	
@@ -31,7 +38,7 @@ public class Wait : MonoBehaviour {
 		}
 		
 		GUI.Label(new Rect(0, 50, w, 40), 
-			"Number of people: " + Networking.nPlayers,
+			"Number of people: " + Networking.players.Count,
 			topLabelStyle);
 	}
 	
