@@ -29,6 +29,9 @@ public class Player : MonoBehaviour {
 	public float knockbackMultiplier = 5f;
 	public float knockbackResistor = 1f;
 	
+	private float coolDown = 0f;
+	private float COOLDOWN_COUNT = 1f;
+	
 	public GameObject stunParticle;
 	public float fatness;
 	private float heartbeatInterval = 1f;
@@ -118,9 +121,9 @@ public class Player : MonoBehaviour {
 			Vector3 direction = Utils.mousePosition() - rigid.position;
 			direction.y = 0;
 			direction = direction/direction.magnitude;
-
+			
 			if(Input.GetKey ( KeyCode.Space ) && move != 0){
-				rigid.velocity = direction * move * MAX_SPEED / rigid.mass;
+				charge();
 				
 				// Lose weight
 				decreaseFat();
@@ -154,6 +157,16 @@ public class Player : MonoBehaviour {
 		this.transform.position = endPos;
 	}
 	
+	public void charge() {
+		Vector3 chargeDisplacement = transform.forward.normalized * 0.5f;
+		if(coolDown > 0) {
+			coolDown -= Time.deltaTime * 3;
+		} else {
+			moveOverTime(chargeDisplacement, 2f); //charge
+			coolDown = COOLDOWN_COUNT;
+		}
+	}
+	
 	private void maxHeartbeatReached() {
 		Debug.Log("Heart Attack!");
 		Instantiate(stunParticle, transform.position + Vector3.up * 1, Quaternion.identity);
@@ -164,7 +177,7 @@ public class Player : MonoBehaviour {
 		heartbeatInterval += heartspeedIncrease * Time.fixedDeltaTime * (increase ? 1 : -1);
 		if (heartbeatInterval <= HEART_SPEED_MIN) {
 			maxHeartbeatReached();
-			heartbeatInterval = HEART_SPEED_MIN;	
+			heartbeatInterval = HEART_SPEED_MIN;
 		} else if (heartbeatInterval > NORMAL_HEART) {
 			heartbeatInterval = NORMAL_HEART;
 		}
