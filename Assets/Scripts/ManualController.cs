@@ -26,12 +26,12 @@ public class ManualController : MonoBehaviour
 			if(Input.GetKey (KeyCode.S)){
 				result += -vector;
 			}
-			if(Input.GetKey (KeyCode.A)){
-				result += new Vector3(-vector.z, vector.y, vector.x);
-			}
-			if(Input.GetKey (KeyCode.D)){
-				result += new Vector3(vector.z, vector.y, -vector.x);
-			}
+//			if(Input.GetKey (KeyCode.A)){
+//				result += new Vector3(-vector.z, vector.y, vector.x);
+//			}
+//			if(Input.GetKey (KeyCode.D)){
+//				result += new Vector3(vector.z, vector.y, -vector.x);
+//			}
 			if(result != Vector3.zero){
 				result /= result.magnitude;
 				networkView.RPC ("BroadcastMoveForward", RPCMode.All, result, Networking.myId);
