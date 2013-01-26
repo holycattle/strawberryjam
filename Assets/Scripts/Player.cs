@@ -186,10 +186,10 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	/*private void maxHeartbeatReached() {
+	private void maxHeartbeatReached() {
 		Instantiate(stunParticle, transform.position + Vector3.up * 1, Quaternion.identity);
 		stunRemaining = STUN_DURATION; //TODO: add fat
-	}*/
+	}
 	
 	private void increaseHeartbeat(bool increase) {
 		heartbeatInterval += heartspeedIncrease * Time.fixedDeltaTime * (increase ? 1 : -1);
