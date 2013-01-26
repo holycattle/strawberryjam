@@ -23,6 +23,9 @@ public class Wait : MonoBehaviour {
 				networkView.RPC("PlayerConnected", p, player);
 			}
 		}
+		if (Networking.players.Count == Networking.NUM_PLAYERS) {
+			Application.LoadLevel("Main");
+		}
 		
 		Debug.Log ("number of players2: " + Networking.players.Count);
 		

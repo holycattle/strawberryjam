@@ -6,6 +6,7 @@ public class Networking : MonoBehaviour {
 	public static bool isServer = false;
 	public static NetworkPlayer server;
 	public static List<NetworkPlayer> players = new List<NetworkPlayer>();
+	public const int NUM_PLAYERS = 2;
 	
 	/*void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
 		stream.Serialize (ref nPlayers);
@@ -15,6 +16,9 @@ public class Networking : MonoBehaviour {
 	void PlayerConnected(NetworkPlayer player) {
 		Networking.players.Add (player);
 		Debug.Log ("Got RPC for PlayerConnected!");
+		if (Networking.players.Count == NUM_PLAYERS) {
+			Application.LoadLevel("Main");
+		}
 	}
 	
 	[RPC]
