@@ -10,7 +10,7 @@ public class ManualController : MonoBehaviour
 	
 	public void FixedUpdate(){
 		Vector3 vector = Utils.MousePosition() - character.position;
-		vector.y = 0;
+		vector.y = 1;
 		vector = vector/vector.magnitude;
 		character.RotateTowards(vector);
 		

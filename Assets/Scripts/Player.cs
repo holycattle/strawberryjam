@@ -21,12 +21,9 @@ public class Player : MonoBehaviour {
 	public bool controllable = false;
 	public bool AIcontrollable = false;
 	
-	const float KNOCKBACK_FACTOR = 0.5f;
-	public float knockbackMultiplier = 5f;
-	public float knockbackResistor = 1f;
-	
 	public GameObject stunParticle;
 	public float fatness;
+	
 	private float heartbeatInterval = 1f;
 	private float heartbeatTimer;
 	private AudioSource heartbeat;
@@ -54,17 +51,22 @@ public class Player : MonoBehaviour {
 	void Start () {
 		GameObject go = GameObject.FindGameObjectWithTag("GameController");
 		MovementEngine engine = go.GetComponent<MovementEngine>();
-		engine.Register(this);
+		engine.RegisterPlayer(this);
 		
 		audio.Play();
 		heartbeatTimer = heartbeatInterval;
 		fatness = 5;
 		
-		knockbackMultiplier = fatness * knockbackMultiplier * KNOCKBACK_FACTOR;
-		knockbackResistor = fatness * knockbackResistor * KNOCKBACK_FACTOR;
 		status = State.WAITING;
 		
 		score = new Score(this.gameObject);
+		
+	}
+	
+	void OnDestroy(){
+		GameObject go = GameObject.FindGameObjectWithTag("GameController");
+		MovementEngine engine = go.GetComponent<MovementEngine>();
+		engine.DestroyPlayer(this);
 	}
 	
 	void OnGUI() {
@@ -88,6 +90,12 @@ public class Player : MonoBehaviour {
 				lastTouch = null;	
 			}
 		}
+	}
+	
+	void updateFatness(float amount){
+		fatness += amount;
+		if(fatness < 1) fatness = 1;
+		if(fatness > 10) fatness = 10;
 	}
 	
 	void FixedUpdate () {
@@ -129,8 +137,18 @@ public class Player : MonoBehaviour {
 	}
 	public void Shove(Vector3 unitVector){
 		if(status == State.WAITING){
-			velocity = Vector3.zero;
+			velocity = unitVector * MAX_SPEED;
+			distance = 1;
 			status = State.SHOVING;
+		}
+	}
+	public void Attacked(Vector3 knockbackVector, float knockbackDistance, float fatLoss){
+		if(status != State.CHARGING){
+			//Charging is immune to knockback??
+			velocity = knockbackVector * MAX_SPEED;
+			distance = knockbackDistance;
+			updateFatness (-fatLoss);
+			status = State.PUSHED;
 		}
 	}
 	public void RotateTowards(Vector3 vector){
@@ -154,78 +172,18 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	private void increaseFat(float fat) {
-		fatness += fat;
-		
-		knockbackMultiplier = fatness * knockbackMultiplier * 0.5f;
-		knockbackResistor = fatness * knockbackResistor * 0.5f;
-	}
-	
-	private void decreaseFat() {
-		// Subtract Fat if fat > 1
-		if(fatness > 1f) {
-			fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
+	void onCollide(SimpleCollider other){
+		string tag = other.gameObject.tag;
+		if(tag == "Player"){
+			Player enemy = other.gameObject.GetComponent<Player>();
+			if(this.status == State.CHARGING && enemy.status != State.CHARGING){
+				Vector3 v = other.position - position;
+				v /= v.magnitude;
+				enemy.Attacked(v, 3 + 0.5f*fatness, 1f);
+			}
+		}else if(tag == "Food"){
+			GameObject.Destroy (other.gameObject);
+			updateFatness (2);
 		}
-		
-		if(knockbackMultiplier > 1f) {
-			knockbackMultiplier -= fatness * knockbackMultiplier * KNOCKBACK_FACTOR;
-		} else {
-			knockbackMultiplier = 1f;
-		}
-		
-		if(knockbackResistor > 1f) {
-			knockbackResistor -= fatness * knockbackResistor * KNOCKBACK_FACTOR;
-		} else {
-			knockbackResistor = 1f;
-		}
-	}
-	
-	void OnTriggerEnter(Collider c) {
-		Debug.Log("hi");
-		/*
-		if (c.gameObject.tag == "Player") {
-			Debug.Log("Coll: " + gameObject.name);
-			Player p = c.gameObject.GetComponent<Player>();
-			//c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
-			lastTouch = p;
-			sinceTouch = 6f;
-		} else if (c.gameObject.tag == "Food") {
-			Debug.Log("Food!");
-			increaseFat(c.gameObject.GetComponent<Item>().fat);
-			Destroy(c.gameObject);
-		}
-		*/
-	}
-	void OnColliderEnter(Collider c) {
-		Debug.Log("collider");
-		/*
-		if (c.gameObject.tag == "Player") {
-			Debug.Log("Coll: " + gameObject.name);
-			Player p = c.gameObject.GetComponent<Player>();
-			//c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
-			lastTouch = p;
-			sinceTouch = 6f;
-		} else if (c.gameObject.tag == "Food") {
-			Debug.Log("Food!");
-			increaseFat(c.gameObject.GetComponent<Item>().fat);
-			Destroy(c.gameObject);
-		}
-		*/
-	}
-	void OnCollisionEnter(Collision c) {
-		Debug.Log("collision");
-		/*
-		if (c.gameObject.tag == "Player") {
-			Debug.Log("Coll: " + gameObject.name);
-			Player p = c.gameObject.GetComponent<Player>();
-			//c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
-			lastTouch = p;
-			sinceTouch = 6f;
-		} else if (c.gameObject.tag == "Food") {
-			Debug.Log("Food!");
-			increaseFat(c.gameObject.GetComponent<Item>().fat);
-			Destroy(c.gameObject);
-		}
-		*/
 	}
 }
