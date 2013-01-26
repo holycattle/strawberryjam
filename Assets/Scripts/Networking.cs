@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Networking : MonoBehaviour {
-	public static bool isServer = false;
 	public static NetworkPlayer server;
 	public static List<NetworkPlayer> players = new List<NetworkPlayer>();
+	public static int myId = -1;
 	public const int NUM_PLAYERS = 2;
 	
 	/*void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
