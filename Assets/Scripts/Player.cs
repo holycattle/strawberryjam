@@ -2,13 +2,13 @@ using UnityEngine;
 using System.Collections;
 
 public class Player : MonoBehaviour {
-	const float MIN_SPEED = 20f;
-	const float MAX_SPEED = 30f;
-	const float FAT_CONSUMPTIONRATE = 1f;
+	const float MIN_SPEED = 50f;
+	const float MAX_SPEED = 80f;
+	const float FAT_CONSUMPTIONRATE = 0.2f;
 	
 	// Heart Constants
 	const float NORMAL_HEART = 1f;
-	float heartspeedIncrease = 0.1f;
+	float heartspeedIncrease = 0.05f;
 	float heartspeedDecrease = 0.1f;
 	const float HEART_SPEED_MIN = 0.4f;
 	const float STUN_DURATION = 2f;
@@ -33,6 +33,8 @@ public class Player : MonoBehaviour {
 	private float heartbeatTimer;
 	private AudioSource heartbeat;
 	private float stunRemaining;
+	
+	public string name;
 	
 	public Player lastTouch;
 	public float sinceTouch;
@@ -99,8 +101,8 @@ public class Player : MonoBehaviour {
 		}
 		if (move != 0) { //if moving
 			//if running
-			if(Input.GetKey(KeyCode.Space) && controllable || AIcontrollable) {
-				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
+			if((Input.GetKey(KeyCode.Space) && controllable) || AIcontrollable) {
+				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier * 1.25f));
 				if(rigid.velocity.magnitude > MAX_SPEED) {
 					rigid.velocity = rigid.velocity.normalized * MAX_SPEED;
 				}
@@ -118,9 +120,16 @@ public class Player : MonoBehaviour {
 				}
 				increaseHeartbeat(true); //rest
 			}
+			
+			if(rigid.velocity.magnitude > MIN_SPEED) {
+				rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
+			}
 		} else {
 			increaseHeartbeat(true); //rest
 		}
+		
+		
+		if (name == "Me") Debug.Log(name + ": " + rigid.velocity.magnitude.ToString());
 	}
 	
 	private void maxHeartbeatReached() {
