@@ -107,17 +107,18 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	private void increaseFat() {
+	private void increaseFat(float fat) {
+		fatness += fat;
+		rigid.mass = fatness;
+	}
+	
+	private void decreaseFat() {
 		// Subtract Fat if fat > 1
 		if(fatness > 1f) {
 			fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
 			rigid.mass = fatness;
 		}
-	}
-	
-	private void decreaseFat() {
-		fatness += c.gameObject.GetComponent<Item>().fat;
-		rigid.mass = fatness;
+
 	}
 	
 	void OnCollisionEnter(Collision c) {
@@ -127,7 +128,7 @@ public class Player : MonoBehaviour {
 			c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");	
-			increaseFat();
+			increaseFat(c.gameObject.GetComponent<Item>().fat);
 			Destroy(c.gameObject);
 		}
 	}
