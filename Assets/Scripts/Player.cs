@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections;
 
 public class Player : MonoBehaviour {
-	const float MIN_SPEED = 20f;
-	const float MAX_SPEED = 30f;
-	const float FAT_CONSUMPTIONRATE = 1f;
+	const float MIN_SPEED = 25f;
+	const float MAX_SPEED = 40f;
+	const float FAT_CONSUMPTIONRATE = 0.2f;
 	
 	// Heart Constants
 	const float NORMAL_HEART = 1f;
