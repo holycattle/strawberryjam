@@ -46,6 +46,12 @@ public class Broadcaster : MonoBehaviour {
 		}
 	}
 	
+	[RPC]
+	public void BroadcastEat(int networkId, string foodId) {
+		GameObject.Destroy (GameObject.Find(foodId));
+		GameMode.players[networkId].updateFatness (2);		
+	}
+	
 	// Update is called once per frame
 	void Update () {
 	

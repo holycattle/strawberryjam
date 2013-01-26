@@ -105,7 +105,7 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	void updateFatness(float amount){
+	public void updateFatness(float amount){
 		fatness += amount;
 		if(fatness < 1) fatness = 1;
 		if(fatness > 10) fatness = 10;
@@ -211,8 +211,11 @@ public class Player : MonoBehaviour {
 				enemy.Attacked(v, 3 + 0.5f*fatness, 1f);
 			}
 		}else if(tag == "Food"){
-			GameObject.Destroy (other.gameObject);
-			updateFatness (2);
+			if (Networking.myId == 0) {
+				networkView.RPC ("BroadcastEat", RPCMode.All, this.networkId, other.gameObject.name);
+			}
 		}
 	}
+	
+	
 }
