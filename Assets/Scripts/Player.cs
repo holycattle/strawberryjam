@@ -98,6 +98,11 @@ public class Player : MonoBehaviour {
 				lastTouch = null;	
 			}
 		}
+		// resync
+		if (Networking.myId == 0) {
+			// resync this guy's position
+			networkView.RPC ("BroadcastResync", RPCMode.Others, this.networkId, transform.position, transform.rotation);
+		}
 	}
 	
 	void updateFatness(float amount){
@@ -129,14 +134,6 @@ public class Player : MonoBehaviour {
 				velocity = Vector3.zero;
 			}
 		}
-//		fixedTicks = (fixedTicks + 1) % RESYNC_RATE;
-//		if (fixedTicks == 0) {
-//			// resync
-//			if (this.networkId == Networking.myId) {
-//				// resync this guy's position
-//				networkView.RPC ("Resync", RPCMode.Others, transform.position, transform.rotation);
-//			}
-//		}
 	}
 	
 	

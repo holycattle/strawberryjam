@@ -36,6 +36,16 @@ public class Broadcaster : MonoBehaviour {
 		}
 	}
 	
+	[RPC]
+	public void BroadcastResync(int networkId, Vector3 position, Quaternion rotation) {
+		foreach (Player player in GameMode.players) {
+			if (player.networkId == networkId) {
+				player.transform.position = position;
+				player.transform.rotation = rotation;
+			}
+		}
+	}
+	
 	// Update is called once per frame
 	void Update () {
 	
