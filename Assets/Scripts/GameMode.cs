@@ -17,10 +17,8 @@ public class GameMode : MonoBehaviour {
 	
 	void Start() {
 		timeRemaining = ROUND_TIME;
-		//Networking.players.Add (Network.player);
+		// set my network ID
 		int nPlayers = Networking.players.Count;
-		Debug.Log ("Test3");
-		//Networking.myId = 0;
 		for (int i = 0; i < nPlayers; ++i) {
 			NetworkPlayer player = Networking.players[i];
 			if (player == Network.player) {
@@ -29,11 +27,10 @@ public class GameMode : MonoBehaviour {
 			}
 		}
 		GameObject playerPrefab = Resources.Load ("prefabs/P1") as GameObject;
-		Debug.Log ("4");
 		
+		// create the players
 		players = new List<Player>();
 		for (int i = 0; i < nPlayers; ++i) {
-			Debug.Log ("Test");
 			float theta = 2*Mathf.PI/nPlayers * i;
 			GameObject player = Instantiate (playerPrefab,
 				(new Vector3(Mathf.Cos (theta), 1, Mathf.Sin (theta))),

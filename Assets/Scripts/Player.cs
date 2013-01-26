@@ -158,7 +158,8 @@ public class Player : MonoBehaviour {
 	
 	public void RotateTowards(Vector3 vector, int networkId){
 		if (this.networkId == networkId) {
-			transform.rotation = Quaternion.LookRotation(vector);
+			var rot = Quaternion.LookRotation(vector);
+			transform.rotation = Quaternion.Euler(0, rot.eulerAngles[1], 0);
 			activeDirection = ((int) (transform.rotation.eulerAngles.y + 22.5f) / 45) % 8;
 		}
 	}
