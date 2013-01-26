@@ -40,6 +40,9 @@ public class GameMode : MonoBehaviour {
 			p.networkId = i;
 			players.Add (p);
 		}
+		
+		//get list of scores from each player
+		initScores();
 	}
 	
 	void OnGUI() {
@@ -53,11 +56,14 @@ public class GameMode : MonoBehaviour {
 		}
 		
 		if (Input.GetKey(KeyCode.Tab) || gameEnded) {
+			Debug.Log ("the end!");
 			int width = 100;
 			int height = 30;
-			for (int i = 0; i < scores.Length; i++) {
-				GUI.Box(new Rect((Screen.width - width) / 2, (Screen.height - height * scores.Length / 2f) / 2 + height * i,
-									width, height), scores[i].GetString());
+			int itr = 0;
+			foreach (Player p in players) {
+				GUI.Box(new Rect((Screen.width - width) / 2, (Screen.height - height * scores.Length / 2f) / 2 + height * itr,
+									width, height), p.score.GetString());
+				itr++;
 			}
 		}
 		
@@ -85,6 +91,7 @@ public class GameMode : MonoBehaviour {
 		Score[] maxxes = new Score[scores.Length];
 		
 		for (int i = 0; i < scores.Length; i++) {
+			
 			if (scores[i].kills > max) {
 				max = scores[i].kills;
 				// Clear array
@@ -101,5 +108,14 @@ public class GameMode : MonoBehaviour {
 		}
 		
 		return null;
+	}
+	
+	public void initScores() {
+		int i = 0;
+		foreach(Player p in players) {
+			scores = new Score[players.Count];
+			scores[i++] = p.score;
+		}
+		Debug.Log ("populating scores list...");
 	}
 }
