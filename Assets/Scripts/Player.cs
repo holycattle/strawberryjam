@@ -29,6 +29,9 @@ public class Player : MonoBehaviour {
 	public float knockbackMultiplier = 5f;
 	public float knockbackResistor = 1f;
 	
+	private float coolDown = 0f;
+	private float COOLDOWN_COUNT = 1f;
+	
 	public GameObject stunParticle;
 	public float fatness;
 	private float heartbeatInterval = 1f;
@@ -84,6 +87,7 @@ public class Player : MonoBehaviour {
 	void FixedUpdate () {
 		float turn = 0;
 		float move = 0;
+		float speedBuffer = 0;
 		if (controllable) {
 			turn = Input.GetAxis("Horizontal");
 			move = Input.GetAxis("Vertical");
@@ -117,9 +121,9 @@ public class Player : MonoBehaviour {
 			Vector3 direction = Utils.mousePosition() - rigid.position;
 			direction.y = 0;
 			direction = direction/direction.magnitude;
-
-			if(Input.GetKey ( KeyCode.Space ) ){
-				rigid.velocity = direction * move * MAX_SPEED / rigid.mass;
+			
+			if(Input.GetKey ( KeyCode.Space ) && move != 0){
+				charge();
 				
 				// Lose weight
 				decreaseFat();
@@ -127,36 +131,40 @@ public class Player : MonoBehaviour {
 				// Increase Heart Rate
 				increaseHeartbeat(false);
 
-			}else{
+			} else if(move != 0) {
 				rigid.velocity = direction * move * MIN_SPEED / rigid.mass;
 
 				increaseHeartbeat(true); //rest
 			}
 			Quaternion temp = Quaternion.LookRotation (direction);
 			rigid.rotation = temp;
-		} else if (move != 0) { //if moving
-			//if running
-			if((Input.GetKey(KeyCode.Space) && controllable) || AIcontrollable) {
-				rigid.velocity = transform.forward * move * MAX_SPEED / rigid.mass;
-				
-				// Lose weight
-				decreaseFat();
-				
-				// Increase Heart Rate
-				increaseHeartbeat(false);
-				
-			} else {
-				rigid.velocity = transform.forward * move * MIN_SPEED / rigid.mass;
-
-				increaseHeartbeat(true); //rest
-			}
-			
-		} else {
-			increaseHeartbeat(true); //rest
 		}
 		
 		
 		if (name == "Me") Debug.Log(name + ": " + rigid.velocity.magnitude.ToString());
+	}
+	
+	public void moveOverTime(Vector3 d, float t) {
+		float rate = 1.0f/t;
+		float i = 0f;
+		Vector3 endPos = this.transform.position + d;
+		
+		while(i < 1.0f) {
+			this.transform.position = Vector3.Lerp(this.transform.position, endPos, i);
+			i += rate * Time.deltaTime;
+		}
+		
+		this.transform.position = endPos;
+	}
+	
+	public void charge() {
+		Vector3 chargeDisplacement = transform.forward.normalized * 0.5f;
+		if(coolDown > 0) {
+			coolDown -= Time.deltaTime * 3;
+		} else {
+			moveOverTime(chargeDisplacement, 2f); //charge
+			coolDown = COOLDOWN_COUNT;
+		}
 	}
 	
 	private void maxHeartbeatReached() {
@@ -169,7 +177,7 @@ public class Player : MonoBehaviour {
 		heartbeatInterval += heartspeedIncrease * Time.fixedDeltaTime * (increase ? 1 : -1);
 		if (heartbeatInterval <= HEART_SPEED_MIN) {
 			maxHeartbeatReached();
-			heartbeatInterval = HEART_SPEED_MIN;	
+			heartbeatInterval = HEART_SPEED_MIN;
 		} else if (heartbeatInterval > NORMAL_HEART) {
 			heartbeatInterval = NORMAL_HEART;
 		}
