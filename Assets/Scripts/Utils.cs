@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Utils
 {
-	public const int DEBUG = false;
+	public const bool DEBUG = false;
 	
 	public Utils ()
 	{
