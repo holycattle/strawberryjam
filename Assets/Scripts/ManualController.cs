@@ -15,7 +15,7 @@ public class ManualController : MonoBehaviour
 		networkView.RPC ("BroadcastRotateTowards", RPCMode.All, vector, Networking.myId);
 		
 		if(Input.GetKeyDown(KeyCode.Space)){
-			networkView.RPC ("BroacastCharge", RPCMode.All, vector, Networking.myId);
+			networkView.RPC ("BroadcastCharge", RPCMode.All, vector, Networking.myId);
 		}else if(Input.GetKeyDown(KeyCode.R)){
 			networkView.RPC ("BroadcastShove", RPCMode.All, vector, Networking.myId);
 		}else{
