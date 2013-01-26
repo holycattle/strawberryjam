@@ -10,8 +10,14 @@ public class Wait : MonoBehaviour {
 	}
 	
 	void OnPlayerConnected() {
-		++Networking.nPlayers;
+		networkView.RPC("PlayerConnected", RPCMode.All);
 		Debug.Log ("Guy connected!");
+	}
+	
+	[RPC]
+	void PlayerConnected() {
+		++Networking.nPlayers;
+		Debug.Log ("Got RPC!");
 	}
 	
 	void OnGUI() {
