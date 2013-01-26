@@ -32,6 +32,9 @@ public class Player : MonoBehaviour {
 	private AudioSource heartbeat;
 	private float stunRemaining;
 	
+	// networking
+	public int networkId;
+	// end networking
 	
 	public Player lastTouch;
 	public float sinceTouch;
@@ -114,28 +117,42 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	public void MoveForward(Vector3 unitVector){
-		if(status == State.WAITING){
-			velocity = unitVector * MIN_SPEED;
-			distance = 0.01;
+	
+	
+	public void MoveForward(Vector3 unitVector, int networkId){
+		if (this.networkId == networkId) {
+			if(status == State.WAITING){
+				velocity = unitVector * MIN_SPEED;
+				distance = 0.01;
+			}	
 		}
 	}
-	public void Charge(Vector3 unitVector){
-		if(status == State.WAITING){
-			velocity = unitVector * MAX_SPEED;
-			status = State.CHARGING;
-			distance = 5;
+	
+	public void Charge(Vector3 unitVector, int networkId){
+		if (this.networkId == networkId) {
+			if(status == State.WAITING){
+				velocity = unitVector * MAX_SPEED;
+				status = State.CHARGING;
+				distance = 5;
+			}
 		}
 	}
-	public void Shove(Vector3 unitVector){
-		if(status == State.WAITING){
-			velocity = Vector3.zero;
-			status = State.SHOVING;
+	
+	public void Shove(Vector3 unitVector, int networkId){
+		if (this.networkId == networkId) {
+			if(status == State.WAITING){
+				velocity = Vector3.zero;
+				status = State.SHOVING;
+			}
 		}
 	}
-	public void RotateTowards(Vector3 vector){
-		transform.rotation = Quaternion.LookRotation(vector);
-		activeDirection = ((int) (transform.rotation.eulerAngles.y + 22.5f) / 45) % 8;
+	
+	public void RotateTowards(Vector3 vector, int networkId){
+		Debug.Log ("I got an RPC for " + networkId + ", and my net ID is " + this.networkId);
+		if (this.networkId == networkId) {
+			transform.rotation = Quaternion.LookRotation(vector);
+			activeDirection = ((int) (transform.rotation.eulerAngles.y + 22.5f) / 45) % 8;
+		}
 	}
 	
 	private void maxHeartbeatReached() {
