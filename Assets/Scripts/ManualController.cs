@@ -13,7 +13,6 @@ public class ManualController : MonoBehaviour
 		vector.y = 0;
 		vector = vector/vector.magnitude;
 		networkView.RPC ("BroadcastRotateTowards", RPCMode.All, vector, Networking.myId);
-		//character.RotateTowards(vector);
 		
 		if(Input.GetKeyDown(KeyCode.Space)){
 			networkView.RPC ("BroacastCharge", RPCMode.All, vector, Networking.myId);
