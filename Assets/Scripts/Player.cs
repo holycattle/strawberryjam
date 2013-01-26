@@ -2,8 +2,8 @@ using UnityEngine;
 using System.Collections;
 
 public class Player : MonoBehaviour {
-	const float MIN_SPEED = 50f;
-	const float MAX_SPEED = 80f;
+	const float MIN_SPEED = 5f;
+	const float MAX_SPEED = 10f;
 	const float FAT_CONSUMPTIONRATE = 0.2f;
 	
 	// Heart Constants
@@ -13,12 +13,14 @@ public class Player : MonoBehaviour {
 	const float HEART_SPEED_MIN = 0.4f;
 	const float STUN_DURATION = 2f;
 	
-	const float MIN_FAT = 1f;
+	const float MIN_FAT = 3f;
 	const float MAX_FAT = 10f;
 	
 	private float rotationSpeed = 180;
 	private float moveSpeed = MIN_SPEED;
 	private float moveSpeedMultiplier = 1f;
+	
+	public int activeDirection = 0;
 	
 	public bool controllable = false;
 	public bool AIcontrollable = false;
@@ -33,6 +35,8 @@ public class Player : MonoBehaviour {
 	private float heartbeatTimer;
 	private AudioSource heartbeat;
 	private float stunRemaining;
+	
+	public Score score;
 	
 	public string name;
 	
@@ -50,9 +54,8 @@ public class Player : MonoBehaviour {
 		heartbeatTimer = heartbeatInterval;
 		fatness = 5;
 		rigid.mass = fatness;
-		
-		knockbackMultiplier = fatness * knockbackMultiplier * KNOCKBACK_FACTOR;
-		knockbackResistor = fatness * knockbackResistor * KNOCKBACK_FACTOR;
+
+		score = new Score(this.gameObject);
 	}
 	
 	void OnGUI() {
@@ -98,14 +101,22 @@ public class Player : MonoBehaviour {
 		
 		if (turn != 0) {
 			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
+			if (trans.rotation.eulerAngles.y < 0) {
+				trans.rotation = Quaternion.Euler(trans.rotation.eulerAngles.x, trans.rotation.eulerAngles.y + 360, trans.rotation.eulerAngles.z);
+			}
+			if (trans.rotation.eulerAngles.y > 360) {
+				trans.rotation = Quaternion.Euler(trans.rotation.eulerAngles.x, trans.rotation.eulerAngles.y - 360, trans.rotation.eulerAngles.z);
+			}
+			
+			activeDirection = ((int) (trans.rotation.eulerAngles.y + 22.5f) / 45) % 8;
+			
+			if (controllable)
+				Debug.Log("Acd: " +activeDirection);
 		}
 		if (move != 0) { //if moving
 			//if running
 			if((Input.GetKey(KeyCode.Space) && controllable) || AIcontrollable) {
-				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier * 1.25f));
-				if(rigid.velocity.magnitude > MAX_SPEED) {
-					rigid.velocity = rigid.velocity.normalized * MAX_SPEED;
-				}
+				rigid.velocity = transform.forward * move * MAX_SPEED / rigid.mass;
 				
 				// Lose weight
 				decreaseFat();
@@ -114,16 +125,11 @@ public class Player : MonoBehaviour {
 				increaseHeartbeat(false);
 				
 			} else {
-				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
-				if(rigid.velocity.magnitude > MIN_SPEED) {
-					rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
-				}
+				rigid.velocity = transform.forward * move * MIN_SPEED / rigid.mass;
+
 				increaseHeartbeat(true); //rest
 			}
 			
-			if(rigid.velocity.magnitude > MIN_SPEED) {
-				rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
-			}
 		} else {
 			increaseHeartbeat(true); //rest
 		}
@@ -182,6 +188,7 @@ public class Player : MonoBehaviour {
 			Player p = c.gameObject.GetComponent<Player>();
 			//c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
 			lastTouch = p;
+			
 			sinceTouch = 6f;
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");
