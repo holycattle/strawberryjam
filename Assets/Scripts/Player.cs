@@ -2,8 +2,8 @@ using UnityEngine;
 using System.Collections;
 
 public class Player : MonoBehaviour {
-	const float MIN_SPEED = 50f;
-	const float MAX_SPEED = 80f;
+	const float MIN_SPEED = 5f;
+	const float MAX_SPEED = 10f;
 	const float FAT_CONSUMPTIONRATE = 0.2f;
 	
 	// Heart Constants
@@ -13,7 +13,7 @@ public class Player : MonoBehaviour {
 	const float HEART_SPEED_MIN = 0.4f;
 	const float STUN_DURATION = 2f;
 	
-	const float MIN_FAT = 1f;
+	const float MIN_FAT = 3f;
 	const float MAX_FAT = 10f;
 	
 	private float rotationSpeed = 180;
@@ -102,10 +102,7 @@ public class Player : MonoBehaviour {
 		if (move != 0) { //if moving
 			//if running
 			if((Input.GetKey(KeyCode.Space) && controllable) || AIcontrollable) {
-				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier * 1.25f));
-				if(rigid.velocity.magnitude > MAX_SPEED) {
-					rigid.velocity = rigid.velocity.normalized * MAX_SPEED;
-				}
+				rigid.velocity = transform.forward * move * MAX_SPEED / rigid.mass;
 				
 				// Lose weight
 				decreaseFat();
@@ -114,16 +111,11 @@ public class Player : MonoBehaviour {
 				increaseHeartbeat(false);
 				
 			} else {
-				rigid.AddForce(transform.forward * move * (moveSpeed * moveSpeedMultiplier));
-				if(rigid.velocity.magnitude > MIN_SPEED) {
-					rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
-				}
+				rigid.velocity = transform.forward * move * MIN_SPEED / rigid.mass;
+
 				increaseHeartbeat(true); //rest
 			}
 			
-			if(rigid.velocity.magnitude > MIN_SPEED) {
-				rigid.velocity = rigid.velocity.normalized * MIN_SPEED;
-			}
 		} else {
 			increaseHeartbeat(true); //rest
 		}
