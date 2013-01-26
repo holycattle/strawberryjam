@@ -13,16 +13,36 @@ public class GameMode : MonoBehaviour {
 	float timeRemaining;
 	bool gameEnded = false;
 	
+	public static List<Player> players;
+	
 	void Start() {
 		timeRemaining = ROUND_TIME;
-		for (int i = 0; i < Networking.players.Count; ++i) {
+		//Networking.players.Add (Network.player);
+		int nPlayers = Networking.players.Count;
+		Debug.Log ("Test3");
+		//Networking.myId = 0;
+		for (int i = 0; i < nPlayers; ++i) {
 			NetworkPlayer player = Networking.players[i];
 			if (player == Network.player) {
 				Networking.myId = i;
 				break;
 			}
 		}
+		GameObject playerPrefab = Resources.Load ("prefabs/P1") as GameObject;
+		Debug.Log ("4");
 		
+		players = new List<Player>();
+		for (int i = 0; i < nPlayers; ++i) {
+			Debug.Log ("Test");
+			float theta = 2*Mathf.PI/nPlayers * i;
+			GameObject player = Instantiate (playerPrefab,
+				(new Vector3(Mathf.Cos (theta), 1, Mathf.Sin (theta))),
+				Quaternion.identity) as GameObject;
+			if (i == Networking.myId) player.AddComponent("ManualController");
+			Player p = player.GetComponent<Player>();
+			p.networkId = i;
+			players.Add (p);
+		}
 	}
 	
 	void OnGUI() {
