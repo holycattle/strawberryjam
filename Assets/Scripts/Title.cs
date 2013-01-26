@@ -25,11 +25,8 @@ public class Title : MonoBehaviour
 	{
 		//Network.incomingPassword = serverPassword;
 		Network.InitializeServer (32, serverPort, false);
-		
 		Networking.isServer = true;
 		connectState = ConnectState.STARTING;
-		
-		
 	}
 	
 	void StartConnect ()
@@ -45,6 +42,8 @@ public class Title : MonoBehaviour
 	}
 	
 	void OnServerInitialized() {
+		Networking.players.Add (Network.player);
+		Networking.server = Network.player;
 		Application.LoadLevel ("Wait");	
 	}
 	
