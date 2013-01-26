@@ -157,7 +157,6 @@ public class Player : MonoBehaviour {
 	}
 	
 	public void RotateTowards(Vector3 vector, int networkId){
-		Debug.Log ("I got an RPC for " + networkId + ", and my net ID is " + this.networkId);
 		if (this.networkId == networkId) {
 			transform.rotation = Quaternion.LookRotation(vector);
 			activeDirection = ((int) (transform.rotation.eulerAngles.y + 22.5f) / 45) % 8;
