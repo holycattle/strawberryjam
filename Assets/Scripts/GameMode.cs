@@ -6,7 +6,7 @@ public class GameMode : MonoBehaviour {
 	
 	const float TIME_WIDTH = 0.2f;
 	const float TIME_HEIGHT = 0.05f;
-	const float ROUND_TIME = 10f;
+	const float ROUND_TIME = 90f;
 	
 	public Score[] scores;
 	
@@ -60,7 +60,19 @@ public class GameMode : MonoBehaviour {
 		Score[] maxxes = new Score[scores.Length];
 		
 		for (int i = 0; i < scores.Length; i++) {
-//			if (scores[i].
+			if (scores[i].kills > max) {
+				max = scores[i].kills;
+				// Clear array
+				for (int o = 0; o < maxxes.Length; o++) {
+					maxxes[o] = null;	
+				}
+				maxxes[0] = scores[i];
+			} else if (scores[i].kills == max) {
+				int o = 1;
+				while (maxxes[o] == null) {
+						
+				}
+			}
 		}
 		
 		return null;

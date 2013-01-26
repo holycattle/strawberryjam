@@ -20,6 +20,8 @@ public class Player : MonoBehaviour {
 	private float moveSpeed = MIN_SPEED;
 	private float moveSpeedMultiplier = 1f;
 	
+	public int activeDirection = 0;
+	
 	public bool controllable = false;
 	public bool AIcontrollable = false;
 	
@@ -98,6 +100,17 @@ public class Player : MonoBehaviour {
 		
 		if (turn != 0) {
 			trans.Rotate(new Vector3(0, turn * rotationSpeed * Time.fixedDeltaTime, 0));
+			if (trans.rotation.eulerAngles.y < 0) {
+				trans.rotation = Quaternion.Euler(trans.rotation.eulerAngles.x, trans.rotation.eulerAngles.y + 360, trans.rotation.eulerAngles.z);
+			}
+			if (trans.rotation.eulerAngles.y > 360) {
+				trans.rotation = Quaternion.Euler(trans.rotation.eulerAngles.x, trans.rotation.eulerAngles.y - 360, trans.rotation.eulerAngles.z);
+			}
+			
+			activeDirection = ((int) (trans.rotation.eulerAngles.y + 22.5f) / 45) % 8;
+			
+			if (controllable)
+				Debug.Log("Acd: " +activeDirection);
 		}
 		if (move != 0) { //if moving
 			//if running

@@ -3,15 +3,22 @@ using System.Collections;
 
 public class SpriteAnimator : MonoBehaviour {
 	public int numFrames;
+	public int numDirections;
 	public float interval = 0.25f;
 
 	// Frame Count
-	private float offsetAmount;
+	private float offsetAmountX;
+	private float offsetAmountY;
 	private float timeSince;
 	private int frameNum;
+	
+	private Player p;
 
 	void Start() {
-		offsetAmount = 1f / numFrames;
+		offsetAmountX = 1f / numFrames;
+		offsetAmountY = 1f / numDirections;
+		
+		p = transform.root.GetComponent<Player>();
 	}
 
 	void Update() {
@@ -19,14 +26,14 @@ public class SpriteAnimator : MonoBehaviour {
 		if (timeSince >= interval) {
 			// Next Frame
 			frameNum = (frameNum + 1) % numFrames;
-			SetFrame(frameNum);
+			SetFrame(frameNum, p.activeDirection);
 
 			// Reset Timer
 			timeSince -= interval;
 		}
 	}
 
-	public void SetFrame(int i) {
-		renderer.material.mainTextureOffset = new Vector2(offsetAmount * frameNum, 0f);
+	public void SetFrame(int i, int o) {
+		renderer.material.mainTextureOffset = new Vector2(offsetAmountX * i, offsetAmountY * o);
 	}
 }
