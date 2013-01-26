@@ -23,7 +23,9 @@ public class Title : MonoBehaviour
 	
 	void StartServer ()
 	{
+		Network.incomingPassword = serverPassword;
 		Network.InitializeServer (32, serverPort, false);
+		
 		Networking.isServer = true;
 		connectState = ConnectState.STARTING;
 		
