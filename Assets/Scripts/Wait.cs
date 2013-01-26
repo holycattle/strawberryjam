@@ -38,7 +38,7 @@ public class Wait : MonoBehaviour {
 		var w = 1280; //Screen.width;
 		var h = 800; //Screen.height;
 		
-		if (Networking.isServer) {
+		if (Networking.server == Network.player) {
 			GUI.Label(new Rect(0, 0, w, 40),
 				"Please tell people to connect to: " + Network.player.ipAddress,
 				topLabelStyle);

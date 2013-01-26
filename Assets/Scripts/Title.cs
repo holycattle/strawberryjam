@@ -25,14 +25,12 @@ public class Title : MonoBehaviour
 	{
 		//Network.incomingPassword = serverPassword;
 		Network.InitializeServer (32, serverPort, false);
-		Networking.isServer = true;
 		connectState = ConnectState.STARTING;
 	}
 	
 	void StartConnect ()
 	{
 		Network.Connect (serverAddress, serverPort);
-		Networking.isServer = false;
 		connectState = ConnectState.CONNECTING;
 	}
 	
