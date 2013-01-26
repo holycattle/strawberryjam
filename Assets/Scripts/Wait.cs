@@ -3,9 +3,15 @@ using System.Collections;
 
 public class Wait : MonoBehaviour {
 	public GUIStyle topLabelStyle;
+	
 	// Use this for initialization
 	void Start () {
 		
+	}
+	
+	void OnPlayerConnected() {
+		++Networking.nPlayers;
+		Debug.Log ("Guy connected!");
 	}
 	
 	void OnGUI() {
@@ -17,6 +23,10 @@ public class Wait : MonoBehaviour {
 				"Please tell people to connect to: " + Network.player.ipAddress,
 				topLabelStyle);
 		}
+		
+		GUI.Label(new Rect(0, 50, w, 40), 
+			"Number of people: " + Networking.nPlayers,
+			topLabelStyle);
 	}
 	
 	// Update is called once per frame
