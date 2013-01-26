@@ -33,6 +33,11 @@ public class Player : MonoBehaviour {
 	public int networkId;
 	// end networking
 	
+	// desync-related stuff
+	private int fixedTicks;
+	private const int RESYNC_RATE = 5;
+	// end desync-related
+	
 	public Player lastTouch;
 	public float sinceTouch;
 	
@@ -63,7 +68,7 @@ public class Player : MonoBehaviour {
 		status = State.WAITING;
 		
 		score = new Score(this.gameObject);
-		
+		fixedTicks = 0;
 	}
 	
 	void OnDestroy(){
@@ -102,6 +107,7 @@ public class Player : MonoBehaviour {
 	}
 	
 	void FixedUpdate () {
+		
 		if(status == State.WAITING){
 			if(distance < 0){
 				velocity = Vector3.zero;
@@ -123,7 +129,16 @@ public class Player : MonoBehaviour {
 				velocity = Vector3.zero;
 			}
 		}
+//		fixedTicks = (fixedTicks + 1) % RESYNC_RATE;
+//		if (fixedTicks == 0) {
+//			// resync
+//			if (this.networkId == Networking.myId) {
+//				// resync this guy's position
+//				networkView.RPC ("Resync", RPCMode.Others, transform.position, transform.rotation);
+//			}
+//		}
 	}
+	
 	
 
 
