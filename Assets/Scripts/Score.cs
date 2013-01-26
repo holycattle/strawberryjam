@@ -11,6 +11,6 @@ public class Score {
 	}
 	
 	public string GetString() {
-		return kills + "/" + deaths;
+		return g.transform.name + ": " + kills.ToString() + "/" + deaths.ToString ();
 	}
 }

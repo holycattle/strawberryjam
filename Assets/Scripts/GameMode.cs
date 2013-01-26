@@ -20,7 +20,7 @@ public class GameMode : MonoBehaviour {
 		scores = new Score[g.Length];
 		int i = 0;
 		foreach (GameObject gg in g) {
-			scores[i] = new Score(gg);
+			scores[i] = gg.GetComponent<Player>().score;
 			i++;
 		}
 	}
@@ -64,30 +64,5 @@ public class GameMode : MonoBehaviour {
 		}
 		
 		return null;
-	}
-				
-	public void SomeoneDied(Player p) {
-		// Add death + kill to counter
-		foreach (Score s in scores) {
-			if (s.g.name == p.gameObject.name) {
-				s.deaths++;
-			} else if (p.lastTouch != null && s.g.name == p.lastTouch.name) {
-				s.kills++;
-			}
-		}			
-	}
-}
-
-public class Score {
-	public GameObject g;
-	public int kills;
-	public int deaths;
-	
-	public Score(GameObject gg) {
-		g = gg;	
-	}
-	
-	public string GetString() {
-		return g.name + " " + kills + "/" + deaths;
 	}
 }

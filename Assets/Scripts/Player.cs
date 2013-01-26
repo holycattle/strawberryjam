@@ -34,6 +34,8 @@ public class Player : MonoBehaviour {
 	private AudioSource heartbeat;
 	private float stunRemaining;
 	
+	public Score score;
+	
 	public string name;
 	
 	public Player lastTouch;
@@ -50,9 +52,8 @@ public class Player : MonoBehaviour {
 		heartbeatTimer = heartbeatInterval;
 		fatness = 5;
 		rigid.mass = fatness;
-		
-		knockbackMultiplier = fatness * knockbackMultiplier * KNOCKBACK_FACTOR;
-		knockbackResistor = fatness * knockbackResistor * KNOCKBACK_FACTOR;
+
+		score = new Score(this.gameObject);
 	}
 	
 	void OnGUI() {
@@ -174,6 +175,7 @@ public class Player : MonoBehaviour {
 			Player p = c.gameObject.GetComponent<Player>();
 			//c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
 			lastTouch = p;
+			
 			sinceTouch = 6f;
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");
