@@ -2,8 +2,8 @@ using UnityEngine;
 using System.Collections;
 
 public class Player : MonoBehaviour {
-	const float MIN_SPEED = 4f;
-	const float MAX_SPEED = 8f;
+	const float MIN_SPEED = 20f;
+	const float MAX_SPEED = 30f;
 	const float FAT_CONSUMPTIONRATE = 1f;
 	
 	// Heart Constants
@@ -17,12 +17,13 @@ public class Player : MonoBehaviour {
 	const float MAX_FAT = 10f;
 	
 	private float rotationSpeed = 180;
-	private float moveSpeed = 16f;
+	private float moveSpeed = MIN_SPEED;
 	private float moveSpeedMultiplier = 1f;
 	
 	public bool controllable = false;
 	public bool AIcontrollable = false;
 	
+	const float KNOCKBACK_FACTOR = 0.5f;
 	public float knockbackMultiplier = 5f;
 	public float knockbackResistor = 1f;
 	
@@ -47,6 +48,9 @@ public class Player : MonoBehaviour {
 		heartbeatTimer = heartbeatInterval;
 		fatness = 5;
 		rigid.mass = fatness;
+		
+		knockbackMultiplier = fatness * knockbackMultiplier * KNOCKBACK_FACTOR;
+		knockbackResistor = fatness * knockbackResistor * KNOCKBACK_FACTOR;
 	}
 	
 	void OnGUI() {
@@ -131,6 +135,9 @@ public class Player : MonoBehaviour {
 	private void increaseFat(float fat) {
 		fatness += fat;
 		rigid.mass = fatness;
+		
+		knockbackMultiplier = fatness * knockbackMultiplier * 0.5f;
+		knockbackResistor = fatness * knockbackResistor * 0.5f;
 	}
 	
 	private void decreaseFat() {
@@ -139,13 +146,25 @@ public class Player : MonoBehaviour {
 			fatness -= FAT_CONSUMPTIONRATE * Time.fixedDeltaTime;
 			rigid.mass = fatness;
 		}
+		
+		if(knockbackMultiplier > 1f) {
+			knockbackMultiplier -= fatness * knockbackMultiplier * KNOCKBACK_FACTOR;
+		} else {
+			knockbackMultiplier = 1f;
+		}
+		
+		if(knockbackResistor > 1f) {
+			knockbackResistor -= fatness * knockbackResistor * KNOCKBACK_FACTOR;
+		} else {
+			knockbackResistor = 1f;
+		}
 	}
 	
 	void OnCollisionEnter(Collision c) {
 		if (c.gameObject.tag == "Player") {
 			Debug.Log("Coll: " + gameObject.name);
 			Player p = c.gameObject.GetComponent<Player>();
-			c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
+			//c.rigidbody.velocity += rigid.velocity * knockbackMultiplier * p.knockbackResistor;
 		} else if (c.gameObject.tag == "Food") {
 			Debug.Log("Food!");
 			increaseFat(c.gameObject.GetComponent<Item>().fat);
