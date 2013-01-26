@@ -11,23 +11,18 @@ public class Wait : MonoBehaviour {
 	}
 	
 	void OnPlayerConnected(NetworkPlayer player) {
-		Debug.Log ("number of players: " + Networking.players.Count);
-		foreach (NetworkPlayer p in Networking.players) {
+		for (int i = 0; i < Networking.nPlayers; ++i) {
 			Debug.Log ("Sending a player to new guy");
-			networkView.RPC ("PlayerConnected", player, p);	
+			networkView.RPC ("AddPlayer", player, Networking.players[i], i);	
 		}
-		Networking.players.Add (player);
-		foreach (NetworkPlayer p in Networking.players) {
-			if (p != Network.player) { 
-				Debug.Log ("Sending new guy to a player");
-				networkView.RPC("PlayerConnected", p, player);
-			}
+		int newId = Networking.nPlayers;
+		Networking.players[Networking.nPlayers++] = player;
+		for (int i = 1; i < Networking.nPlayers; ++i) {
+			networkView.RPC ("AddPlayer", player, Networking.players[newId], newId);	
 		}
-		if (Networking.players.Count == Networking.NUM_PLAYERS) {
+		if (Networking.nPlayers == Networking.NUM_PLAYERS) {
 			Application.LoadLevel("Main");
 		}
-		
-		Debug.Log ("number of players2: " + Networking.players.Count);
 		
 		Debug.Log ("Guy connected!");
 	}
@@ -38,14 +33,14 @@ public class Wait : MonoBehaviour {
 		var w = 1280; //Screen.width;
 		var h = 800; //Screen.height;
 		
-		if (Networking.server == Network.player) {
+		if (Networking.players[0] == Network.player) {
 			GUI.Label(new Rect(0, 0, w, 40),
 				"Please tell people to connect to: " + Network.player.ipAddress,
 				topLabelStyle);
 		}
 		
 		GUI.Label(new Rect(0, 50, w, 40), 
-			"Number of people: " + Networking.players.Count,
+			"Number of people: " + Networking.nPlayers,
 			topLabelStyle);
 	}
 	
