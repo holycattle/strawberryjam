@@ -59,7 +59,22 @@ public class GameMode : MonoBehaviour {
 		int max = -1;
 		Score[] maxxes = new Score[scores.Length];
 		
-//		foreach(
+		for (int i = 0; i < scores.Length; i++) {
+//			if (scores[i].
+		}
+		
+		return null;
+	}
+				
+	public void SomeoneDied(Player p) {
+		// Add death + kill to counter
+		foreach (Score s in scores) {
+			if (s.g.name == p.gameObject.name) {
+				s.deaths++;
+			} else if (p.lastTouch != null && s.g.name == p.lastTouch.name) {
+				s.kills++;
+			}
+		}			
 	}
 }
 
