@@ -6,7 +6,7 @@ public class GameMode : MonoBehaviour {
 	
 	const float TIME_WIDTH = 0.2f;
 	const float TIME_HEIGHT = 0.05f;
-	const float ROUND_TIME = 10f;
+	const float ROUND_TIME = 30f;
 	
 	public Score[] scores;
 	
