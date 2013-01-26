@@ -5,7 +5,7 @@ public class Reviver : MonoBehaviour {
 	public float remaining;
 	
 	void Start() {
-		transform.position = new Vector3(0, -1, 0);	
+		transform.position = new Vector3(0, -10, 0);	
 	}
 	
 	void Update() {
