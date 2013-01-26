@@ -34,6 +34,6 @@ public class SpriteAnimator : MonoBehaviour {
 	}
 
 	public void SetFrame(int i, int o) {
-		renderer.material.mainTextureOffset = new Vector2(offsetAmountX * i, offsetAmountY * o);
+		renderer.material.mainTextureOffset = new Vector2(offsetAmountX * o, offsetAmountY * i);
 	}
 }
