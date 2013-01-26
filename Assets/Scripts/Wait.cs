@@ -11,21 +11,25 @@ public class Wait : MonoBehaviour {
 	}
 	
 	void OnPlayerConnected(NetworkPlayer player) {
+		Debug.Log ("number of players: " + Networking.players.Count);
 		foreach (NetworkPlayer p in Networking.players) {
+			Debug.Log ("Sending a player to new guy");
 			networkView.RPC ("PlayerConnected", player, p);	
 		}
+		Networking.players.Add (player);
 		foreach (NetworkPlayer p in Networking.players) {
-			networkView.RPC("PlayerConnected", p, player);	
+			if (p != Network.player) { 
+				Debug.Log ("Sending new guy to a player");
+				networkView.RPC("PlayerConnected", p, player);
+			}
 		}
+		
+		Debug.Log ("number of players2: " + Networking.players.Count);
 		
 		Debug.Log ("Guy connected!");
 	}
 	
-	[RPC]
-	void PlayerConnected(NetworkPlayer player) {
-		Networking.players.Add (player);
-		Debug.Log ("Got RPC!");
-	}
+
 	
 	void OnGUI() {
 		var w = 1280; //Screen.width;
