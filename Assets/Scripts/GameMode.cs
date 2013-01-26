@@ -71,32 +71,34 @@ public class GameMode : MonoBehaviour {
 	
 	
 	void OnGUI() {
-
-		GUI.Box(new Rect(Screen.width - Screen.width * TIME_WIDTH, 0, Screen.width * TIME_WIDTH, Screen.height * TIME_HEIGHT),
-			"Time Remaining: " + Mathf.CeilToInt(timeRemaining));
 		
-		int id = -1;
-		
-		if (Utils.DEBUG) {
-			GUI.Label (new Rect(100, 100, 200, 200), "Player ID is: " + id);
-		}
-		
-		if (Input.GetKey(KeyCode.Tab) || gameEnded) {
-			Debug.Log ("the end!");
-			int width = 100;
-			int height = 30;
-			int itr = 0;
-			foreach (Player p in players) {
-				GUI.Box(new Rect((Screen.width - width) / 2, (Screen.height - height * scores.Length / 2f) / 2 + height * itr,
-									width, height), p.score.GetString());
-				itr++;
-
+		if (gameStarted) {
+			GUI.Box(new Rect(Screen.width - Screen.width * TIME_WIDTH, 0, Screen.width * TIME_WIDTH, Screen.height * TIME_HEIGHT),
+				"Time Remaining: " + Mathf.CeilToInt(timeRemaining));
+			
+			int id = -1;
+			
+			if (Utils.DEBUG) {
+				GUI.Label (new Rect(100, 100, 200, 200), "Player ID is: " + id);
 			}
 			
-			if (gameEnded) {
-				// Show Winner
+			if (Input.GetKey(KeyCode.Tab) || gameEnded) {
+				Debug.Log ("the end!");
+				int width = 100;
+				int height = 30;
+				int itr = 0;
+				foreach (Player p in players) {
+					GUI.Box(new Rect((Screen.width - width) / 2, (Screen.height - height * scores.Length / 2f) / 2 + height * itr,
+										width, height), p.score.GetString());
+					itr++;
+	
+				}
 				
-			}
+				if (gameEnded) {
+					// Show Winner
+					
+				}
+			} 
 		} else {
 			var dW = 200;
 			var dH = 100;
