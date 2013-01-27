@@ -17,8 +17,8 @@ public class Player : MonoBehaviour {
 	
 	const float PROJECTILE_SPEED = 15f;
 	
-	const float CHARGE_COOLDOWN = 0.75f;
-	const float SHOVE_COOLDOWN = 0.40f;
+	const double CHARGE_COOLDOWN = 0.75;
+	const double SHOVE_COOLDOWN = 0.40;
 	
 	// Heart Constants
 	const float NORMAL_HEART = 1f;
@@ -49,14 +49,14 @@ public class Player : MonoBehaviour {
 	
 	// desync-related stuff
 	private int fixedTicks;
-	private const int RESYNC_RATE = 3;
+	private const int RESYNC_RATE = 5;
 	// end desync-related
 	
 	public Player lastTouch;
 	public float sinceTouch;
 	
-	public float distance;
-	public float timer;
+	public double distance;
+	private double timer;
 	
 	public enum State {WAITING, CHARGING, SHOVING, PUSHED};
 	public State status;
@@ -75,8 +75,8 @@ public class Player : MonoBehaviour {
 		set { this.rigidbody.velocity = velocity; }
 	}
 	
-	public float chargeCooldown; //These will be <= 0 if usable.
-	public float shoveCooldown;
+	public double chargeCooldown; //These will be <= 0 if usable.
+	public double shoveCooldown;
 	
 	
 	void Start () {
@@ -149,11 +149,7 @@ public class Player : MonoBehaviour {
 		if (Networking.myId == 0) {
 			// resync this guy's position
 			networkView.RPC ("BroadcastResync", RPCMode.Others, this.networkId, transform.position, transform.rotation,
-				score.kills, score.deaths,
-				//fatness, velocity, distance, timer,
-				lastTouch == null ? -1 : lastTouch.networkId
-				//,sinceTouch, heartbeatInterval
-				);
+				score.kills, score.deaths);
 		}
 	}
 	
@@ -162,10 +158,7 @@ public class Player : MonoBehaviour {
 		if(fatness < 1) fatness = 1;
 		if(fatness > 10) fatness = 10;
 		
-		//update player size only if it's being pushed or is shoving or charging at someone; also updates when food is picked up-- see OnCollisionEnter
-		if(status == State.PUSHED || status == State.SHOVING || status == State.CHARGING) {
-			this.gameObject.transform.localScale = new Vector3(1+0.15f*fatness, 1+0.15f*fatness, 1+0.15f*fatness);
-		}
+		this.gameObject.transform.localScale = new Vector3(1+0.15f*fatness, 1+0.15f*fatness, 1+0.15f*fatness);
 	}
 	
 	void FixedUpdate () {
@@ -220,7 +213,7 @@ public class Player : MonoBehaviour {
 		if (this.networkId == networkId) {
 			if(status == State.WAITING){
 				rigidbody.velocity = unitVector * (MIN_SPEED + FAT_SPEED/fatness);
-				distance = 0.10f;
+				distance = 0.10;
 			}
 		}
 	}
@@ -359,7 +352,7 @@ public class Player : MonoBehaviour {
 		} else if(tag == "Food") {
 			if (Networking.myId == 0) {
 				networkView.RPC ("BroadcastEat", RPCMode.All, this.networkId, collision.gameObject.name);
-				this.gameObject.transform.localScale = new Vector3(1+0.15f*fatness, 1+0.15f*fatness, 1+0.15f*fatness);
+				
 				// [Sound] Food
 				audio.PlayOneShot(eatFoodSound);
 			}
