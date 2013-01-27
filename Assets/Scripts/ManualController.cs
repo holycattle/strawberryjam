@@ -9,32 +9,39 @@ public class ManualController : MonoBehaviour
 	}
 	
 	public void FixedUpdate(){
-		Vector3 vector = Utils.MousePosition() - character.position;
-		vector.y = 0;
-		vector = vector/vector.magnitude;
-		networkView.RPC ("BroadcastRotateTowards", RPCMode.All, vector, Networking.myId);
-		
-		if(Input.GetKeyDown(KeyCode.Space)){
-			networkView.RPC ("BroadcastCharge", RPCMode.All, vector, Networking.myId);
-		}else if(Input.GetKeyDown(KeyCode.R)){
+		if(Input.GetMouseButtonDown(0)){
+			Vector3 vector = Utils.MousePosition() - character.position;
+			vector.y = 0;
+			vector = vector/vector.magnitude;
 			networkView.RPC ("BroadcastShove", RPCMode.All, vector, Networking.myId);
-		}else{
+		}else if(Input.GetMouseButtonDown (1)){
+			Vector3 vector = Utils.MousePosition() - character.position;
+			vector.y = 0;
+			vector = vector/vector.magnitude;
+			networkView.RPC ("BroadcastCharge", RPCMode.All, vector, Networking.myId);
+			networkView.RPC ("BroadcastRotateTowards", RPCMode.All, vector, Networking.myId);
+		}else if(character.status != Player.State.CHARGING) {
 			Vector3 result = Vector3.zero;
+
 			if(Input.GetKey(KeyCode.W)){
-				result += vector;
+				result += Vector3.forward;
 			}
 			if(Input.GetKey (KeyCode.S)){
-				result += -vector;
+				result += Vector3.back;
 			}
-//			if(Input.GetKey (KeyCode.A)){
-//				result += new Vector3(-vector.z, vector.y, vector.x);
-//			}
-//			if(Input.GetKey (KeyCode.D)){
-//				result += new Vector3(vector.z, vector.y, -vector.x);
-//			}
+			if(Input.GetKey (KeyCode.A)){
+				result += Vector3.left;
+				//result += new Vector3(-vector.z, vector.y, vector.x);
+			}
+			if(Input.GetKey (KeyCode.D)){
+				result += Vector3.right;
+				//result += new Vector3(vector.z, vector.y, -vector.x);
+			}
+			
 			if(result != Vector3.zero){
 				result /= result.magnitude;
 				networkView.RPC ("BroadcastMoveForward", RPCMode.All, result, Networking.myId);
+				networkView.RPC ("BroadcastRotateTowards", RPCMode.All, result, Networking.myId);
 			}
 		}
 		
