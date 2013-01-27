@@ -8,7 +8,7 @@ public class Networking : MonoBehaviour {
 	public static int myId = -1;
 	//public const int NUM_PLAYERS = 2;
 	private int tick = 0;
-	private int resyncInterval = 50;
+	private int resyncInterval = 100;
 	
 	[RPC]
 	public void SyncPlayers(NetworkPlayer p1, NetworkPlayer p2, NetworkPlayer p3, NetworkPlayer p4, int nPlayers) {
@@ -34,7 +34,7 @@ public class Networking : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (players[0] == Network.player) {
+		if (!GameMode.gameStarted && players[0] == Network.player) {
 			tick = (tick + 1) % resyncInterval;
 			if (tick == 0) {
 				networkView.RPC ("SyncPlayers", RPCMode.Others, players[0], players[1], players[2], players[3], nPlayers);	
