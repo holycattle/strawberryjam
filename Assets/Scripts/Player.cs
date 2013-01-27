@@ -64,12 +64,12 @@ public class Player : MonoBehaviour {
 	public Score score;	
 	public ParticleEmitter parEmit;
 	
-	private Vector3 old_position;
 	public Vector3 position
 	{
 		get{ return this.transform.position; }
 		set{ this.transform.position = position; }
 	}
+	
 	public Vector3 velocity{
 		get { return this.rigidbody.velocity; }
 		set { this.rigidbody.velocity = velocity; }

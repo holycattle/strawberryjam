@@ -55,6 +55,7 @@ public class Broadcaster : MonoBehaviour {
 	[RPC]
 	public void BroadcastEat(int networkId, string foodId) {
 		GameObject.Destroy (GameObject.Find(foodId));
+		ItemSpawner.numFood--;
 		GameMode.players[networkId].updateFatness (2);		
 	}
 	
