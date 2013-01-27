@@ -149,7 +149,11 @@ public class Player : MonoBehaviour {
 		if (Networking.myId == 0) {
 			// resync this guy's position
 			networkView.RPC ("BroadcastResync", RPCMode.Others, this.networkId, transform.position, transform.rotation,
-				score.kills, score.deaths, fatness, velocity, distance, timer, lastTouch == null ? -1 : lastTouch.networkId, sinceTouch, heartbeatInterval);
+				score.kills, score.deaths,
+				//fatness, velocity, distance, timer,
+				lastTouch == null ? -1 : lastTouch.networkId
+				//,sinceTouch, heartbeatInterval
+				);
 		}
 	}
 	
