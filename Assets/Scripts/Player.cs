@@ -35,7 +35,7 @@ public class Player : MonoBehaviour {
 	public GameObject stunParticle;
 	public float fatness;
 	
-	private float heartbeatInterval = 1f;
+	public float heartbeatInterval;
 	private float heartbeatTimer;
 	private AudioSource heartbeat;
 	private float stunRemaining;
@@ -86,6 +86,7 @@ public class Player : MonoBehaviour {
 		engine.RegisterPlayer(this);
 		*/
 		audio.Play();
+		heartbeatInterval = 1f;
 		heartbeatTimer = heartbeatInterval;
 		fatness = 5;
 		

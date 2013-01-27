@@ -16,6 +16,8 @@ public class GameMode : MonoBehaviour {
 	public static List<Player> players;
 	public static int nConnected = 0;
 	public static bool gameStarted = false;
+	public static Player mainPlayer;
+	
 	void Start() {
 		timeRemaining = ROUND_TIME;
 		gameStarted = false;
@@ -49,7 +51,6 @@ public class GameMode : MonoBehaviour {
 			}
 		}
 		
-		
 		// create the players
 		players = new List<Player>();
 		for (int i = 0; i < nPlayers; ++i) {
@@ -64,6 +65,8 @@ public class GameMode : MonoBehaviour {
 				GameObject g = Instantiate(gPref, Vector3.zero, Quaternion.identity) as GameObject;
 				g.transform.parent = player.transform;
 				g.transform.localPosition = new Vector3(0, 0.8f, 0);
+				
+				mainPlayer = player.GetComponent<Player>();
 			}
 			Player p = player.GetComponent<Player>();
 			p.networkId = i;
