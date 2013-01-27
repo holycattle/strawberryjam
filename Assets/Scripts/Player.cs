@@ -82,7 +82,7 @@ public class Player : MonoBehaviour {
 		fixedTicks = 0;
 		
 		eatFoodSound = Resources.Load("sfx/eatfood", typeof(AudioClip)) as AudioClip;
-		eatFoodSound = Resources.Load("sfx/bounce", typeof(AudioClip)) as AudioClip;
+		bounceSound = Resources.Load("sfx/bounce", typeof(AudioClip)) as AudioClip;
 		
 		parEmit = GetComponentInChildren<ParticleEmitter>();
 		parEmit.emit = false;
@@ -251,6 +251,8 @@ public class Player : MonoBehaviour {
 			status = State.PUSHED;
 			
 			// [Sound] Bounce
+			audio.PlayOneShot(bounceSound);
+		} else if(status != State.SHOVING) {
 			audio.PlayOneShot(bounceSound);
 		}
 	}
