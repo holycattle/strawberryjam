@@ -56,7 +56,7 @@ public class Player : MonoBehaviour {
 	public float sinceTouch;
 	
 	public double distance;
-	private double timer;
+	public double timer;
 	
 	public enum State {WAITING, CHARGING, SHOVING, PUSHED};
 	public State status;
