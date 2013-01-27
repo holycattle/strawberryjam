@@ -34,12 +34,12 @@ public class GameMode : MonoBehaviour {
 		++GameMode.nConnected;
 		if (GameMode.nConnected == Networking.nPlayers) {
 			Debug.Log ("Starting game");
-			networkView.RPC ("StartGame", RPCMode.All);
+			networkView.RPC ("StartGame", RPCMode.All, Random.Range (0, 4));
 		}
 	}
 	
 	[RPC]
-	void StartGame() {
+	void StartGame(int sIdx) {
 		Debug.Log ("Seriously starting game");
 		// set my network ID
 		int nPlayers = Networking.nPlayers;
@@ -55,7 +55,7 @@ public class GameMode : MonoBehaviour {
 		players = new List<Player>();
 		for (int i = 0; i < nPlayers; ++i) {
 			
-			GameObject playerPrefab = Resources.Load ("prefabs/P" + (i + 1)) as GameObject;
+			GameObject playerPrefab = Resources.Load ("prefabs/P" + (i+1)) as GameObject;
 			GameObject player = Instantiate (playerPrefab,
 				Utils.startingPosition(i),
 				Quaternion.identity) as GameObject;
@@ -79,7 +79,7 @@ public class GameMode : MonoBehaviour {
 		initScores();
 		
 		//Set gravity to super high.
-		Physics.gravity = Physics.gravity*10;
+		Physics.gravity = Physics.gravity*7;
 		gameStarted = true;
 	}
 	
@@ -98,8 +98,8 @@ public class GameMode : MonoBehaviour {
 			
 			if (Input.GetKey(KeyCode.Tab) || gameEnded) {
 				Debug.Log ("the end!");
-				int width = 100;
-				int height = 30;
+				int width = 170;
+				int height = 60;
 				int itr = 0;
 				foreach (Player p in players) {
 					GUI.Box(new Rect((Screen.width - width) / 2, (Screen.height - height * scores.Length / 2f) / 2 + height * itr,

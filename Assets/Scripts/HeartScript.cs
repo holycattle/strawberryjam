@@ -19,7 +19,7 @@ public class HeartScript : MonoBehaviour {
 	private Player p;
 	
 	void Start() {
-		tex = (Texture2D) Resources.Load("img/heart", typeof(Texture));
+		tex = (Texture2D) Resources.Load("img/hearts", typeof(Texture));
 		interval = animationDuration / numFrames;
 		actInterval = interval;
 		actDelay = extraDelay;
@@ -54,7 +54,7 @@ public class HeartScript : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-		GUI.Box(new Rect(0, 0, 100, 100), "Delay: " + extraDelay);
+//		GUI.Box(new Rect(0, 0, 100, 100), "Delay: " + extraDelay);
 		GUI.DrawTextureWithTexCoords(new Rect(0, 0, 64, 64), tex, new Rect((float) frame/numFrames ,0f,1f/numFrames,1f), true);
 	}
 }

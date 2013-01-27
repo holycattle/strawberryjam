@@ -39,6 +39,7 @@ public class Title : MonoBehaviour
 	void StartConnect ()
 	{
 		Network.Connect (serverAddress, serverPort);
+		Networking.serverAddress = serverAddress;
 		connectState = ConnectState.CONNECTING;
 	}
 	
