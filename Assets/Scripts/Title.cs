@@ -85,7 +85,9 @@ public class Title : MonoBehaviour
 		
 		serverAddress = GUILayout.TextField (serverAddress);
 		
-		
+		if (GUILayout.Button ("Connect")) {
+			StartConnect();	
+		}
 		GUILayout.EndVertical ();
 	}
 	
@@ -103,21 +105,20 @@ public class Title : MonoBehaviour
 			modalOn  = true;
 			GUILayout.Window (0, new Rect (w / 2 - dW / 2, h / 2 - dH / 2, dW, dH),
 				AlertWindow, "");
-			GUI.enabled = false;
 		} else if (displayConnectDialog) {
-			
+			modalOn = true;
+			GUILayout.Window (0, new Rect (w / 2 - dW / 2, h / 2 - dH / 2, dW, dH),
+				ConnectWindow, "");
 		}
 		if (modalOn) {
 			GUI.enabled = false;	
 		}
 		GUILayout.BeginArea (new Rect (10, h/2-btnH, 200, 100));
 		
-		serverAddress = GUILayout.TextField (serverAddress);
-		
-		//if (GUILayout.Button ("Connect and Play")) {
-		//	print ("Playing");	
-		//	displayConnectDialog = true;
-		//}
+		if (GUILayout.Button ("Connect and Play...")) {
+			print ("Playing");	
+			displayConnectDialog = true;
+		}
 		
 		GUILayout.FlexibleSpace ();
 		
