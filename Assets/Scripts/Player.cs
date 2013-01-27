@@ -149,7 +149,10 @@ public class Player : MonoBehaviour {
 		if(fatness < 1) fatness = 1;
 		if(fatness > 10) fatness = 10;
 		
-		this.gameObject.transform.localScale = new Vector3(1+0.15f*fatness, 1+0.15f*fatness, 1+0.15f*fatness);
+		//update player size only if it's being pushed or is shoving or charging at someone; also updates when food is picked up-- see OnCollisionEnter
+		if(status == State.PUSHED || status == State.SHOVING || status == State.CHARGING) {
+			this.gameObject.transform.localScale = new Vector3(1+0.15f*fatness, 1+0.15f*fatness, 1+0.15f*fatness);
+		}
 	}
 	
 	void FixedUpdate () {
@@ -340,7 +343,7 @@ public class Player : MonoBehaviour {
 		} else if(tag == "Food") {
 			if (Networking.myId == 0) {
 				networkView.RPC ("BroadcastEat", RPCMode.All, this.networkId, collision.gameObject.name);
-				
+				this.gameObject.transform.localScale = new Vector3(1+0.15f*fatness, 1+0.15f*fatness, 1+0.15f*fatness);
 				// [Sound] Food
 				audio.PlayOneShot(eatFoodSound);
 			}
