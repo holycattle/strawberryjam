@@ -113,7 +113,7 @@ public class Player : MonoBehaviour {
 	
 	void OnGUI() {
 		if (Networking.myId == networkId) {
-			GUI.Box(new Rect(0, 0, 100, 30), "Fat: " + fatness);
+//			GUI.Box(new Rect(0, 0, 100, 30), "Fat: " + fatness);
 			/*if (GetComponent<ManualController>() != null) {
 				GUI.Label (new Rect(000, 200, 200, 400), "Rotation is: " + transform.rotation.eulerAngles);
 			}*/
