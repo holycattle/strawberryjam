@@ -17,6 +17,9 @@ public class Player : MonoBehaviour {
 	
 	const float PROJECTILE_SPEED = 15f;
 	
+	const double CHARGE_COOLDOWN = 0.75;
+	const double SHOVE_COOLDOWN = 0.40;
+	
 	// Heart Constants
 	const float NORMAL_HEART = 1f;
 	float heartspeedIncrease = 0.05f;
@@ -74,6 +77,10 @@ public class Player : MonoBehaviour {
 		get { return this.rigidbody.velocity; }
 		set { this.rigidbody.velocity = velocity; }
 	}
+	
+	public double chargeCooldown; //These will be <= 0 if usable.
+	public double shoveCooldown;
+	
 	
 	void Start () {
 		/*
@@ -136,6 +143,9 @@ public class Player : MonoBehaviour {
 				status = State.WAITING;
 			}
 		}
+		
+		shoveCooldown -= Time.deltaTime;
+		chargeCooldown -= Time.deltaTime;
 		
 		// resync
 		if (Networking.myId == 0) {
@@ -212,11 +222,12 @@ public class Player : MonoBehaviour {
 	
 	public void Charge(Vector3 unitVector, int networkId){
 		if (this.networkId == networkId) {
-			if(status == State.WAITING){
+			if(status == State.WAITING && chargeCooldown <= 0){
 				rigidbody.velocity = unitVector * CHARGE_SPEED;
 				status = State.CHARGING;
 				distance = 5;
 				updateFatness (-CHARGE_CONSUMPTION);
+				chargeCooldown = CHARGE_COOLDOWN;
 			}
 		}
 	}
@@ -226,7 +237,7 @@ public class Player : MonoBehaviour {
 		//I'm really not happy with how this turned out.
 		
 		if (this.networkId == networkId) {
-			if(status == State.WAITING){
+			if(status == State.WAITING && shoveCooldown <= 0){
 				updateFatness (-SHOVE_CONSUMPTION);
 				status = State.SHOVING;
 				
@@ -262,6 +273,8 @@ public class Player : MonoBehaviour {
 						}
 					}	
 				}
+				
+				shoveCooldown = SHOVE_COOLDOWN;
 			}
 		}
 	}
