@@ -18,6 +18,11 @@ public class Title : MonoBehaviour
 	private ConnectState connectState = ConnectState.IDLE;
 	private bool displayConnectDialog = false;
 	private bool displayServeDialog = false;
+	
+	public Texture2D texBackground;
+	public GUIStyle connectButton;
+	public GUIStyle serverButton;
+	
 	// Use this for initialization
 	void Start ()
 	{
@@ -91,13 +96,15 @@ public class Title : MonoBehaviour
 		GUILayout.EndVertical ();
 	}
 	
-	void OnGUI ()
-	{
+	void OnGUI () {
 		var w = 1280; //Screen.width;
 		var h = 800; //Screen.height;
 		
-		var btnW = 150;
-		var btnH = 100;
+		// Background
+		GUI.DrawTexture(new Rect(0, 0, w, h), texBackground);
+		
+		var btnW = 445;
+		var btnH = 58;
 		// Dialogs!
 		int dW = 300;
 		int dH = 200;
@@ -113,25 +120,15 @@ public class Title : MonoBehaviour
 		if (modalOn) {
 			GUI.enabled = false;	
 		}
-		GUILayout.BeginArea (new Rect (10, h/2-btnH, 200, 100));
 		
-		if (GUILayout.Button ("Connect and Play...")) {
+		if (GUI.Button(new Rect(w / 2 - btnW / 2, 580, btnW, btnH), "", connectButton)) {
 			print ("Playing");	
 			displayConnectDialog = true;
 		}
-		
-		GUILayout.FlexibleSpace ();
-		
-		if (GUILayout.Button ("Start a Server")) {
+		if (GUI.Button(new Rect(w / 2 - btnW / 2, 640, btnW, btnH), "", serverButton)) {
 			print ("Serving");
 			StartServer();
 		}
-		
-		
-		GUILayout.EndArea ();
-		
-		
-		
 		GUI.enabled = true;
 	}
 	
