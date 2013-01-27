@@ -38,7 +38,7 @@ public class Broadcaster : MonoBehaviour {
 	
 	[RPC]
 	public void BroadcastResync(int networkId, Vector3 position, Quaternion rotation, int kills, int deaths,
-		float fatness, Vector3 velocity, double distance, double timer, int lastTouchID, float sinceTouch,
+		float fatness, Vector3 velocity, float distance, float timer, int lastTouchID, float sinceTouch,
 		float heartbeatInterval) {
 		Player player = GameMode.players[networkId];
 		player.transform.position = position;
@@ -49,7 +49,7 @@ public class Broadcaster : MonoBehaviour {
 		player.velocity = velocity;
 		player.distance = distance;
 		player.timer = timer;
-		player.lastTouch = GameMode.players[lastTouchID];
+		player.lastTouch = lastTouchID != -1 ? GameMode.players[lastTouchID] : null;
 		player.sinceTouch = sinceTouch;
 		player.heartbeatInterval = heartbeatInterval;
 	}
