@@ -45,13 +45,13 @@ public class Broadcaster : MonoBehaviour {
 		player.transform.rotation = rotation;
 		player.score.kills = kills;
 		player.score.deaths = deaths;
-		player.fatness = fatness;
-		player.velocity = velocity;
-		player.distance = distance;
-		player.timer = timer;
+		//player.fatness = fatness;
+		//player.velocity = velocity;
+		//player.distance = distance;
+		//player.timer = timer;
 		player.lastTouch = lastTouchID != -1 ? GameMode.players[lastTouchID] : null;
 		player.sinceTouch = sinceTouch;
-		player.heartbeatInterval = heartbeatInterval;
+		//player.heartbeatInterval = heartbeatInterval;
 	}
 	
 	[RPC]
