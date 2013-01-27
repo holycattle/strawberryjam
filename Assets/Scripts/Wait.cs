@@ -11,18 +11,18 @@ public class Wait : MonoBehaviour {
 	}
 	
 	void OnPlayerConnected(NetworkPlayer player) {
-		for (int i = 0; i < Networking.nPlayers; ++i) {
+		/*for (int i = 0; i < Networking.nPlayers; ++i) {
 			Debug.Log ("Sending a player to new guy");
 			networkView.RPC ("AddPlayer", player, Networking.players[i], i);	
-		}
+		}*/
 		int newId = Networking.nPlayers;
 		Networking.players[Networking.nPlayers++] = player;
-		for (int i = 1; i < Networking.nPlayers; ++i) {
+		/*for (int i = 1; i < Networking.nPlayers; ++i) {
 			networkView.RPC ("AddPlayer", player, Networking.players[newId], newId);	
 		}
 		if (Networking.nPlayers == Networking.NUM_PLAYERS) {
 			Application.LoadLevel("Main");
-		}
+		}*/
 		
 		Debug.Log ("Guy connected!");
 	}

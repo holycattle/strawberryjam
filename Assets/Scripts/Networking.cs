@@ -7,29 +7,38 @@ public class Networking : MonoBehaviour {
 	public static NetworkPlayer[] players = new NetworkPlayer[8];
 	public static int myId = -1;
 	public const int NUM_PLAYERS = 2;
+	private int tick = 0;
+	private int resyncInterval = 50;
 	
-	/*void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
-		stream.Serialize (ref nPlayers);
-		Debug.Log ("Serialize!");
-	}*/
 	[RPC]
-	public void AddPlayer(NetworkPlayer player, int id) {
-		Networking.players[id] = player;
-		Networking.nPlayers++;
-		if (Networking.nPlayers == NUM_PLAYERS) {
+	public void SyncPlayers(NetworkPlayer p1, NetworkPlayer p2, NetworkPlayer p3, NetworkPlayer p4, int nPlayers) {
+		players[0] = p1;
+		players[1] = p2;
+		players[2] = p3;
+		players[3] = p4;
+		Networking.nPlayers = nPlayers;
+		if (Application.loadedLevel != 2 && Networking.nPlayers >= NUM_PLAYERS) {
 			Application.LoadLevel("Main");
 		}
 	}
 	
 	
-	
 	// Use this for initialization
 	void Start () {
-	
+		
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if (players[0] == Network.player) {
+			tick = (tick + 1) % resyncInterval;
+			if (tick == 0) {
+				networkView.RPC ("SyncPlayers", RPCMode.Others, players[0], players[1], players[2], players[3], nPlayers);	
+				if (Application.loadedLevel != 2 && Networking.nPlayers >= NUM_PLAYERS) {
+					Application.LoadLevel("Main");
+				}
+			}
+			
+		}
 	}
 }
