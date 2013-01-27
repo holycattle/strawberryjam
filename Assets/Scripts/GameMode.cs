@@ -53,10 +53,10 @@ public class GameMode : MonoBehaviour {
 		// create the players
 		players = new List<Player>();
 		for (int i = 0; i < nPlayers; ++i) {
-			float theta = 2*Mathf.PI/nPlayers * i;
+			
 			GameObject playerPrefab = Resources.Load ("prefabs/P" + (i + 1)) as GameObject;
 			GameObject player = Instantiate (playerPrefab,
-				(new Vector3(Mathf.Cos (theta), 1, Mathf.Sin (theta))),
+				Utils.startingPosition(i),
 				Quaternion.identity) as GameObject;
 			if (i == Networking.myId) {
 				player.AddComponent("ManualController");
@@ -74,7 +74,7 @@ public class GameMode : MonoBehaviour {
 		initScores();
 		
 		//Set gravity to super high.
-		Physics.gravity = Physics.gravity*5;
+		Physics.gravity = Physics.gravity*10;
 		gameStarted = true;
 	}
 	
@@ -85,11 +85,11 @@ public class GameMode : MonoBehaviour {
 			GUI.Box(new Rect(Screen.width - Screen.width * TIME_WIDTH, 0, Screen.width * TIME_WIDTH, Screen.height * TIME_HEIGHT),
 				"Time Remaining: " + Mathf.CeilToInt(timeRemaining));
 			
-			int id = -1;
+			//int id = -1;
 			
-			if (Utils.DEBUG) {
-				GUI.Label (new Rect(100, 100, 200, 200), "Player ID is: " + id);
-			}
+			//if (Utils.DEBUG) {
+			//	GUI.Label (new Rect(100, 100, 200, 200), "Player ID is: " + id);
+			//}
 			
 			if (Input.GetKey(KeyCode.Tab) || gameEnded) {
 				Debug.Log ("the end!");
