@@ -6,7 +6,7 @@ public class Networking : MonoBehaviour {
 	public static int nPlayers = 0;
 	public static NetworkPlayer[] players = new NetworkPlayer[8];
 	public static int myId = -1;
-	public const int NUM_PLAYERS = 2;
+	//public const int NUM_PLAYERS = 2;
 	private int tick = 0;
 	private int resyncInterval = 50;
 	
@@ -17,8 +17,12 @@ public class Networking : MonoBehaviour {
 		players[2] = p3;
 		players[3] = p4;
 		Networking.nPlayers = nPlayers;
-		if (Application.loadedLevel != 2 && Networking.nPlayers >= NUM_PLAYERS) {
-			Application.LoadLevel("Main");
+	}
+	
+	[RPC]
+	public void MakeLoad() {
+		if (Application.loadedLevel != 2) {
+			Application.LoadLevel("Main");	
 		}
 	}
 	
@@ -34,9 +38,6 @@ public class Networking : MonoBehaviour {
 			tick = (tick + 1) % resyncInterval;
 			if (tick == 0) {
 				networkView.RPC ("SyncPlayers", RPCMode.Others, players[0], players[1], players[2], players[3], nPlayers);	
-				if (Application.loadedLevel != 2 && Networking.nPlayers >= NUM_PLAYERS) {
-					Application.LoadLevel("Main");
-				}
 			}
 			
 		}

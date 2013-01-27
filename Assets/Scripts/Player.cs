@@ -17,6 +17,9 @@ public class Player : MonoBehaviour {
 	
 	const float PROJECTILE_SPEED = 15f;
 	
+	const double CHARGE_COOLDOWN = 0.75;
+	const double SHOVE_COOLDOWN = 0.40;
+	
 	// Heart Constants
 	const float NORMAL_HEART = 1f;
 	float heartspeedIncrease = 0.05f;
@@ -29,13 +32,10 @@ public class Player : MonoBehaviour {
 	
 	public int activeDirection = 0;
 	
-	public bool controllable = false;
-	public bool AIcontrollable = false;
-	
 	public GameObject stunParticle;
 	public float fatness;
 	
-	private float heartbeatInterval = 1f;
+	public float heartbeatInterval;
 	private float heartbeatTimer;
 	private AudioSource heartbeat;
 	private float stunRemaining;
@@ -49,7 +49,7 @@ public class Player : MonoBehaviour {
 	
 	// desync-related stuff
 	private int fixedTicks;
-	private const int RESYNC_RATE = 5;
+	private const int RESYNC_RATE = 3;
 	// end desync-related
 	
 	public Player lastTouch;
@@ -75,6 +75,10 @@ public class Player : MonoBehaviour {
 		set { this.rigidbody.velocity = velocity; }
 	}
 	
+	public double chargeCooldown; //These will be <= 0 if usable.
+	public double shoveCooldown;
+	
+	
 	void Start () {
 		/*
 		GameObject go = GameObject.FindGameObjectWithTag("GameController");
@@ -82,6 +86,7 @@ public class Player : MonoBehaviour {
 		engine.RegisterPlayer(this);
 		*/
 		audio.Play();
+		heartbeatInterval = 1f;
 		heartbeatTimer = heartbeatInterval;
 		fatness = 5;
 		
@@ -106,7 +111,7 @@ public class Player : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-		if (controllable) {
+		if (Networking.myId == networkId) {
 			GUI.Box(new Rect(0, 0, 100, 30), "Fat: " + fatness);
 			if (GetComponent<ManualController>() != null) {
 				GUI.Label (new Rect(000, 200, 200, 400), "Rotation is: " + transform.rotation.eulerAngles);
@@ -115,7 +120,7 @@ public class Player : MonoBehaviour {
 	}
 	
 	void Update() {
-		if (controllable) {
+		if (Networking.myId == networkId) {
 			heartbeatTimer -= Time.deltaTime;
 			if (heartbeatTimer <= 0) {
 				audio.Play();
@@ -137,10 +142,14 @@ public class Player : MonoBehaviour {
 			}
 		}
 		
+		shoveCooldown -= Time.deltaTime;
+		chargeCooldown -= Time.deltaTime;
+		
 		// resync
 		if (Networking.myId == 0) {
 			// resync this guy's position
-			networkView.RPC ("BroadcastResync", RPCMode.Others, this.networkId, transform.position, transform.rotation);
+			networkView.RPC ("BroadcastResync", RPCMode.Others, this.networkId, transform.position, transform.rotation,
+				score.kills, score.deaths, fatness, velocity, distance, timer, lastTouch.networkId, sinceTouch, heartbeatInterval);
 		}
 	}
 	
@@ -214,11 +223,12 @@ public class Player : MonoBehaviour {
 	
 	public void Charge(Vector3 unitVector, int networkId){
 		if (this.networkId == networkId) {
-			if(status == State.WAITING){
+			if(status == State.WAITING && chargeCooldown <= 0){
 				rigidbody.velocity = unitVector * CHARGE_SPEED;
 				status = State.CHARGING;
 				distance = 5;
 				updateFatness (-CHARGE_CONSUMPTION);
+				chargeCooldown = CHARGE_COOLDOWN;
 			}
 		}
 	}
@@ -228,7 +238,7 @@ public class Player : MonoBehaviour {
 		//I'm really not happy with how this turned out.
 		
 		if (this.networkId == networkId) {
-			if(status == State.WAITING){
+			if(status == State.WAITING && shoveCooldown <= 0){
 				updateFatness (-SHOVE_CONSUMPTION);
 				status = State.SHOVING;
 				
@@ -264,6 +274,8 @@ public class Player : MonoBehaviour {
 						}
 					}	
 				}
+				
+				shoveCooldown = SHOVE_COOLDOWN;
 			}
 		}
 	}
