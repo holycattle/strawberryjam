@@ -67,6 +67,8 @@ public class Wait : MonoBehaviour {
 			if (GUI.Button(new Rect(w/2 - btnW/2, 500, btnW, btnH), "", connectButton)) {
 				networkView.RPC("MakeLoad", RPCMode.All);
 			}
+		} else {
+			GUI.Label(new Rect(w/2 - btnW/2, 380, btnW, btnH), Networking.serverAddress, IPAddress);
 		}
 		
 		for (int i = 0; i < 4; i++) {

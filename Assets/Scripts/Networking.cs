@@ -6,6 +6,7 @@ public class Networking : MonoBehaviour {
 	public static int nPlayers = 0;
 	public static NetworkPlayer[] players = new NetworkPlayer[8];
 	public static int myId = -1;
+	public static string serverAddress;
 	//public const int NUM_PLAYERS = 2;
 	private int tick = 0;
 	private int resyncInterval = 100;
