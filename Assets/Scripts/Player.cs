@@ -53,6 +53,8 @@ public class Player : MonoBehaviour {
 	
 	public Score score;
 	
+	public ParticleEmitter parEmit;
+	
 	private Vector3 old_position;
 	public Vector3 position
 	{
@@ -81,6 +83,9 @@ public class Player : MonoBehaviour {
 		
 		eatFoodSound = Resources.Load("sfx/eatfood", typeof(AudioClip)) as AudioClip;
 		eatFoodSound = Resources.Load("sfx/bounce", typeof(AudioClip)) as AudioClip;
+		
+		parEmit = GetComponentInChildren<ParticleEmitter>();
+		parEmit.emit = false;
 	}
 	
 	void OnDestroy(){
@@ -141,9 +146,10 @@ public class Player : MonoBehaviour {
 			status = State.WAITING;
 		}
 		
+		parEmit.emit = false;
 		if(status == State.WAITING){
-			
 		}else if(status == State.CHARGING){
+			parEmit.emit = true;
 		}else if(status == State.SHOVING){
 		}else if(status == State.PUSHED){
 		}
