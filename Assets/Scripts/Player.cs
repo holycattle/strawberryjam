@@ -29,6 +29,9 @@ public class Player : MonoBehaviour {
 	private AudioSource heartbeat;
 	private float stunRemaining;
 	
+	private AudioClip eatFoodSound;
+	private AudioClip bounceSound;
+	
 	// networking
 	public int networkId;
 	// end networking
@@ -69,6 +72,9 @@ public class Player : MonoBehaviour {
 		
 		score = new Score(this.gameObject);
 		fixedTicks = 0;
+		
+		eatFoodSound = Resources.Load("sfx/eatfood", typeof(AudioClip)) as AudioClip;
+		eatFoodSound = Resources.Load("sfx/bounce", typeof(AudioClip)) as AudioClip;
 	}
 	
 	void OnDestroy(){
@@ -136,9 +142,6 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	
-
-
 	public void MoveForward(Vector3 unitVector, int networkId){
 		if (this.networkId == networkId) {
 			if(status == State.WAITING){
@@ -157,7 +160,6 @@ public class Player : MonoBehaviour {
 			}
 		}
 	}
-
 	
 	public void Shove(Vector3 unitVector, int networkId){
 		if (this.networkId == networkId) {
@@ -178,11 +180,14 @@ public class Player : MonoBehaviour {
 	
 	public void Attacked(Vector3 knockbackVector, float knockbackDistance, float fatLoss){
 		if(status != State.CHARGING){
-			//Charging is immune to knockback??
+			// Charging is immune to knockback??
 			velocity = knockbackVector * MAX_SPEED;
 			distance = knockbackDistance;
 			updateFatness (-fatLoss);
 			status = State.PUSHED;
+			
+			// [Sound] Bounce
+			audio.PlayOneShot(bounceSound);
 		}
 	}
 	
@@ -210,12 +215,13 @@ public class Player : MonoBehaviour {
 				v /= v.magnitude;
 				enemy.Attacked(v, 3 + 0.5f*fatness, 1f);
 			}
-		}else if(tag == "Food"){
+		} else if(tag == "Food") {
 			if (Networking.myId == 0) {
 				networkView.RPC ("BroadcastEat", RPCMode.All, this.networkId, other.gameObject.name);
+				
+				// [Sound] Food
+				audio.PlayOneShot(eatFoodSound);
 			}
 		}
 	}
-	
-	
 }
