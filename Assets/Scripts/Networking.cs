@@ -20,7 +20,7 @@ public class Networking : MonoBehaviour {
 	}
 	
 	[RPC]
-	public void StartGame() {
+	public void MakeLoad() {
 		if (Application.loadedLevel != 2) {
 			Application.LoadLevel("Main");	
 		}
