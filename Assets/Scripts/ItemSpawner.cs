@@ -12,7 +12,7 @@ public class ItemSpawner : MonoBehaviour {
 	public int foodCounter = 0;
 	
 	void Start() {
-		foodCounter = 0;	
+		foodCounter = 0;
 	}
 	
 	// Update is called once per frame
