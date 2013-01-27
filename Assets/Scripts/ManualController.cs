@@ -21,7 +21,11 @@ public class ManualController : MonoBehaviour
 			vector.y = 0;
 			vector = vector/vector.magnitude;
 			networkView.RPC ("BroadcastCharge", RPCMode.All, vector, Networking.myId);
-			networkView.RPC ("BroadcastRotateTowards", RPCMode.All, vector, Networking.myId);
+			if (Networking.myId == 0) {
+				gameObject.GetComponent<Broadcaster>().BroadcastRotateTowards(vector, Networking.myId);
+			} else {
+				networkView.RPC ("BroadcastRotateTowards", Networking.players[0], vector, Networking.myId);
+			}
 		}else if(character.status != Player.State.CHARGING) {
 			Vector3 result = Vector3.zero;
 
@@ -42,8 +46,11 @@ public class ManualController : MonoBehaviour
 			
 			if(result != Vector3.zero){
 				result /= result.magnitude;
-				networkView.RPC ("BroadcastMoveForward", RPCMode.All, result, Networking.myId);
-				networkView.RPC ("BroadcastRotateTowards", RPCMode.All, result, Networking.myId);
+				if (Networking.myId == 0) {
+					gameObject.GetComponent<Broadcaster>().BroadcastRotateAndMove(result, Networking.myId);
+				} else {
+					networkView.RPC ("BroadcastRotateAndMove", Networking.players[0], result, Networking.myId);
+				}
 			}
 		}
 		

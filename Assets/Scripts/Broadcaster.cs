@@ -37,30 +37,33 @@ public class Broadcaster : MonoBehaviour {
 	}
 	
 	[RPC]
-	public void BroadcastResync(int networkId, Vector3 position, Quaternion rotation, int kills, int deaths,
-		//float fatness, Vector3 velocity, float distance, float timer, 
-		int lastTouchID
-		//, float sinceTouch
-		//float heartbeatInterval
-		) {
+	public void BroadcastRotateAndMove(Vector3 vector, int networkId){
+		Player player = GameMode.players[networkId];
+		player.MoveForward (vector, networkId);
+		player.RotateTowards(vector, networkId);
+	}
+	
+	[RPC]
+	public void BroadcastResync(int networkId, Vector3 position, Quaternion rotation) {
 		Player player = GameMode.players[networkId];
 		player.transform.position = position;
 		player.transform.rotation = rotation;
-		player.score.kills = kills;
-		player.score.deaths = deaths;
-		//player.fatness = fatness;
-		//player.velocity = velocity;
-		//player.distance = distance;
-		//player.timer = timer;
-		player.lastTouch = lastTouchID != -1 ? GameMode.players[lastTouchID] : null;
-		//player.sinceTouch = sinceTouch;
-		//player.heartbeatInterval = heartbeatInterval;
+		player.rigidbody.rotation = rotation;
+		player.rigidbody.position = position;
 	}
 	
 	[RPC]
 	public void BroadcastEat(int networkId, string foodId) {
 		GameObject.Destroy (GameObject.Find(foodId));
 		GameMode.players[networkId].updateFatness (2);		
+	}
+	
+	[RPC]
+	public void BroadcastDeath(int networkId, int kills, int deaths) {
+		Player player = GameMode.players[networkId];
+		player.score.kills = kills;
+		player.score.deaths = deaths;
+		
 	}
 	
 	// Update is called once per frame

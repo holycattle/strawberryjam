@@ -6,7 +6,14 @@ public class Reviver : MonoBehaviour {
 	
 	void Start() {
 		Debug.Log ("KILLING");
-		transform.position = new Vector3(0, -100, 0);	
+		transform.position = new Vector3(0, -100, 0);
+		if (Networking.myId == 0) {
+			for (int i = 0; i < Networking.nPlayers; ++i) {
+				networkView.RPC ("BroadcastDeaths", RPCMode.Others, i, GameMode.players[i].score.kills,
+					GameMode.players[i].score.deaths);
+			}
+		}
+		
 	}
 	
 	void Update() {
