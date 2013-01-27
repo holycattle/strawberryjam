@@ -9,6 +9,8 @@ public class Wait : MonoBehaviour {
 	public GUIStyle connectButton;
 	public Texture2D[][] faces;
 	public Rect[] rects;
+	public GUIStyle IPAddress;
+	public GUISkin ski;
 	
 	// Use this for initialization
 	void Start () {
@@ -23,8 +25,10 @@ public class Wait : MonoBehaviour {
 		rects = new Rect[4];
 		rects[0] = new Rect(0, 0, 512, 512);
 		rects[1] = new Rect(Screen.width - 512, 0, 512, 512);
-		rects[2] = new Rect(0, Screen.height - 512, 512, 512);
-		rects[3] = new Rect(Screen.width - 512, Screen.height - 512, 512, 512);
+		rects[2] = new Rect(Screen.width - 512, Screen.height - 512, 512, 512);
+		rects[3] = new Rect(0, Screen.height - 512, 512, 512);
+		
+		ski = Resources.Load("img/WaitMenu/CRAP", typeof(GUISkin)) as GUISkin;
 	}
 	
 	void OnPlayerConnected(NetworkPlayer player) {
@@ -52,18 +56,24 @@ public class Wait : MonoBehaviour {
 		var btnW  = 512;
 		var btnH = 128;
 		
+		GUI.skin = ski;
+		
 		// Background
 		GUI.DrawTexture(new Rect(0, 0, w, h), texBackground);
 		
 		if (Networking.players[0] == Network.player) {
-			if (GUI.Button(new Rect(w/2 - btnW/2, 600, btnW, btnH), "Start Game!")) {
-				networkView.RPC("MakeLoad", RPCMode.All);	
+			GUI.Label(new Rect(w/2 - btnW/2, 380, btnW, btnH), Network.player.ipAddress, IPAddress);
+			
+			if (GUI.Button(new Rect(w/2 - btnW/2, 500, btnW, btnH), "", connectButton)) {
+				networkView.RPC("MakeLoad", RPCMode.All);
 			}
 		}
 		
 		for (int i = 0; i < 4; i++) {
-			GUI.DrawTexture(rects[i], faces[i][Networking.nPlayers < i ? 1 : 0]);
+			GUI.DrawTexture(rects[i], faces[i][i < Networking.nPlayers ? 1 : 0]);
 		}
+		
+		GUI.skin = null;
 	}
 	
 	// Update is called once per frame
