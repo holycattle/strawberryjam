@@ -37,10 +37,19 @@ public class Broadcaster : MonoBehaviour {
 	}
 	
 	[RPC]
+	public void BroadcastRotateAndMove(Vector3 vector, int networkId){
+		Player player = GameMode.players[networkId];
+		player.MoveForward (vector, networkId);
+		player.RotateTowards(vector, networkId);
+	}
+	
+	[RPC]
 	public void BroadcastResync(int networkId, Vector3 position, Quaternion rotation) {
 		Player player = GameMode.players[networkId];
 		player.transform.position = position;
 		player.transform.rotation = rotation;
+		player.rigidbody.rotation = rotation;
+		player.rigidbody.position = position;
 	}
 	
 	[RPC]

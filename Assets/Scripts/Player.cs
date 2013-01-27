@@ -49,7 +49,7 @@ public class Player : MonoBehaviour {
 	
 	// desync-related stuff
 	private int fixedTicks;
-	private const int RESYNC_RATE = 3;
+	private const int RESYNC_RATE = 1;
 	// end desync-related
 	
 	public Player lastTouch;
@@ -144,7 +144,7 @@ public class Player : MonoBehaviour {
 		
 		shoveCooldown -= Time.deltaTime;
 		chargeCooldown -= Time.deltaTime;
-		
+		activeDirection = ((int) (transform.rotation.eulerAngles.y + 22.5f) / 45) % 8;
 		
 	}
 	
@@ -297,7 +297,7 @@ public class Player : MonoBehaviour {
 			var rot = Quaternion.LookRotation(vector);
 			transform.rotation = Quaternion.Euler(0, rot.eulerAngles[1], 0);
 			rigidbody.rotation = Quaternion.Euler(0, rot.eulerAngles[1], 0);
-			activeDirection = ((int) (transform.rotation.eulerAngles.y + 22.5f) / 45) % 8;
+			
 		}
 	}
 	
