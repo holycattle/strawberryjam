@@ -1,11 +1,24 @@
 using UnityEngine;
-using System.Collections;
 
 public class Player : MonoBehaviour {
-	const float MIN_SPEED = 5f;
-	const float MAX_SPEED = 20f;
+	const float MIN_SPEED = 3f; //Movement speed is MIN_SPEED + FAT_SPEED/fatness
+	const float FAT_SPEED = 5f;
+	
+	const float CHARGE_SPEED = 20f; //This is speed of charging.
+	
+	const float MIN_SHOVE = 1f; //Shove distance is MIN_SHOVE + FatDifference*FAT_SHOVE. Minimum of MIN_SHOVE.
+	const float FAT_SHOVE = 0.5f;
+	
+	const float KNOCKBACK_SPEED = 20f; //This is knockback speed.
+	
+	const float WALK_CONSUMPTION = 0.2f; //Cost per second of walking.
+	const float CHARGE_CONSUMPTION = 0.5f; //Cost per charge.
+	const float SHOVE_CONSUMPTION = 0.1f; //Cost per shove.
+	
 	const float PROJECTILE_SPEED = 15f;
-	const float FAT_CONSUMPTIONRATE = 0.2f;
+	
+	const double CHARGE_COOLDOWN = 0.75;
+	const double SHOVE_COOLDOWN = 0.40;
 	
 	// Heart Constants
 	const float NORMAL_HEART = 1f;
@@ -45,14 +58,13 @@ public class Player : MonoBehaviour {
 	public Player lastTouch;
 	public float sinceTouch;
 	
-	private bool attacked;
 	public double distance;
+	private double timer;
 	
 	public enum State {WAITING, CHARGING, SHOVING, PUSHED};
 	public State status;
 	
-	public Score score;
-	
+	public Score score;	
 	public ParticleEmitter parEmit;
 	
 	private Vector3 old_position;
@@ -65,6 +77,10 @@ public class Player : MonoBehaviour {
 		get { return this.rigidbody.velocity; }
 		set { this.rigidbody.velocity = velocity; }
 	}
+	
+	public double chargeCooldown; //These will be <= 0 if usable.
+	public double shoveCooldown;
+	
 	
 	void Start () {
 		/*
@@ -82,7 +98,7 @@ public class Player : MonoBehaviour {
 		fixedTicks = 0;
 		
 		eatFoodSound = Resources.Load("sfx/eatfood", typeof(AudioClip)) as AudioClip;
-		eatFoodSound = Resources.Load("sfx/bounce", typeof(AudioClip)) as AudioClip;
+		bounceSound = Resources.Load("sfx/bounce", typeof(AudioClip)) as AudioClip;
 		
 		parEmit = GetComponentInChildren<ParticleEmitter>();
 		parEmit.emit = false;
@@ -120,6 +136,17 @@ public class Player : MonoBehaviour {
 				lastTouch = null;	
 			}
 		}
+		
+		if(status == State.SHOVING){
+			timer -= Time.deltaTime;
+			if(timer <= 0){
+				status = State.WAITING;
+			}
+		}
+		
+		shoveCooldown -= Time.deltaTime;
+		chargeCooldown -= Time.deltaTime;
+		
 		// resync
 		if (Networking.myId == 0) {
 			// resync this guy's position
@@ -131,43 +158,75 @@ public class Player : MonoBehaviour {
 		fatness += amount;
 		if(fatness < 1) fatness = 1;
 		if(fatness > 10) fatness = 10;
+		
+		this.gameObject.transform.localScale = new Vector3(1+0.15f*fatness, 1+0.15f*fatness, 1+0.15f*fatness);
 	}
 	
 	void FixedUpdate () {
 		if(old_position == null){
 			old_position = position;
 		}
-		distance -= (position-old_position).magnitude;
-		old_position = position;
-		if(distance <= 0){
-			rigidbody.velocity = Vector3.zero;
-			status = State.WAITING;
-		}
 		
 		parEmit.emit = false;
 		if(status == State.WAITING){
+			float traveled = (position-old_position).magnitude;
+			old_position = position;
+			if(traveled > 0.001f){
+				distance -= traveled;
+				if(distance <= 0){
+					rigidbody.velocity = Vector3.zero;
+					//We finished walking for this frame.
+				}
+				updateFatness(-WALK_CONSUMPTION*0.02f);
+			}
 		}else if(status == State.CHARGING){
 			parEmit.emit = true;
+
+			float traveled = (position-old_position).magnitude;
+			old_position = position;
+			if(traveled > 0.001f){
+				distance -= traveled;
+				if(distance <= 0){
+					rigidbody.velocity = Vector3.zero;
+					status = State.WAITING;
+					
+					//Charging ended here.
+				}
+			}
 		}else if(status == State.SHOVING){
+			//Nothing here yet.
 		}else if(status == State.PUSHED){
+			float traveled = (position-old_position).magnitude;
+			old_position = position;
+			if(traveled > 0.001f){
+				distance -= traveled;
+				if(distance <= 0){
+					rigidbody.velocity = Vector3.zero;
+					status = State.WAITING;
+					
+					//Shoving ended here.
+				}
+			}
 		}
 	}
 	
 	public void MoveForward(Vector3 unitVector, int networkId){
 		if (this.networkId == networkId) {
 			if(status == State.WAITING){
-				rigidbody.velocity = unitVector * MIN_SPEED;
-				distance = 0.01;
+				rigidbody.velocity = unitVector * (MIN_SPEED + FAT_SPEED/fatness);
+				distance = 0.10;
 			}
 		}
 	}
 	
 	public void Charge(Vector3 unitVector, int networkId){
 		if (this.networkId == networkId) {
-			if(status == State.WAITING){
-				rigidbody.velocity = unitVector * MAX_SPEED;
+			if(status == State.WAITING && chargeCooldown <= 0){
+				rigidbody.velocity = unitVector * CHARGE_SPEED;
 				status = State.CHARGING;
 				distance = 5;
+				updateFatness (-CHARGE_CONSUMPTION);
+				chargeCooldown = CHARGE_COOLDOWN;
 			}
 		}
 	}
@@ -177,7 +236,8 @@ public class Player : MonoBehaviour {
 		//I'm really not happy with how this turned out.
 		
 		if (this.networkId == networkId) {
-			if(status == State.WAITING){
+			if(status == State.WAITING && shoveCooldown <= 0){
+				updateFatness (-SHOVE_CONSUMPTION);
 				status = State.SHOVING;
 				
 				Quaternion rotation = transform.rotation;
@@ -206,14 +266,16 @@ public class Player : MonoBehaviour {
 						float dotB = full.x*ortho.x + full.y*ortho.y + full.z*ortho.z;
 						if( 0 <= dotA && dotA <= 2.5 && Mathf.Abs(dotB) <= 1.5){
 							Vector3 unit = full/full.magnitude;
+							float fatnessDifference = fatness-player.fatness;
 							
-							player.Attacked (unit, Mathf.Max(2+(fatness-player.fatness)/2, 1), 2);
+							player.Attacked (unit, Mathf.Max(MIN_SHOVE+FAT_SHOVE*fatnessDifference, 1), MIN_SHOVE);
 						}
-					}
+					}	
 				}
+				
+				shoveCooldown = SHOVE_COOLDOWN;
 			}
 		}
-		
 	}
 	/*
 	public void Shove(Vector3 unitVector, int networkId){
@@ -242,13 +304,15 @@ public class Player : MonoBehaviour {
 	public void Attacked(Vector3 knockbackVector, float knockbackDistance, float fatLoss){
 		if(status != State.CHARGING){
 			//Charging is immune to knockback??
-			rigidbody.velocity = knockbackVector * MAX_SPEED;
+			rigidbody.velocity = knockbackVector * KNOCKBACK_SPEED;
 
 			distance = knockbackDistance;
 			updateFatness (-fatLoss);
 			status = State.PUSHED;
 			
 			// [Sound] Bounce
+			audio.PlayOneShot(bounceSound);
+		} else if(status != State.SHOVING) {
 			audio.PlayOneShot(bounceSound);
 		}
 	}
@@ -277,6 +341,8 @@ public class Player : MonoBehaviour {
 		string tag = collision.gameObject.tag;
 		if(tag == "Player"){
 			Player enemy = collision.gameObject.GetComponent<Player>();
+			this.lastTouch = enemy;
+			enemy.lastTouch = this;
 			if(this.status == State.CHARGING && enemy.status != State.CHARGING){
 				Vector3 v = enemy.position - position;
 				v /= v.magnitude;

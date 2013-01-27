@@ -14,16 +14,20 @@ public class Title : MonoBehaviour
 		FAILED_CONN,
 		FAILED_SERVE // THIS STATE NEVER HAPPENS?	
 	}
+	private bool modalOn = false;
 	private ConnectState connectState = ConnectState.IDLE;
+	private bool displayConnectDialog = false;
+	private bool displayServeDialog = false;
 	// Use this for initialization
 	void Start ()
 	{
 		Application.runInBackground = true;
+		modalOn = false;
 	}
 	
 	void StartServer ()
 	{
-		Network.InitializeServer (32, serverPort, false);
+		Network.InitializeServer (3, serverPort, false);
 		connectState = ConnectState.STARTING;
 	}
 	
@@ -76,6 +80,17 @@ public class Title : MonoBehaviour
 			GUILayout.EndVertical ();
 	}
 	
+	void ConnectWindow(int windowId) {
+		GUILayout.BeginVertical ();
+		
+		serverAddress = GUILayout.TextField (serverAddress);
+		
+		if (GUILayout.Button ("Connect")) {
+			StartConnect();	
+		}
+		GUILayout.EndVertical ();
+	}
+	
 	void OnGUI ()
 	{
 		var w = 1280; //Screen.width;
@@ -83,13 +98,26 @@ public class Title : MonoBehaviour
 		
 		var btnW = 150;
 		var btnH = 100;
-		GUILayout.BeginArea (new Rect (10, 100, 200, 100));
+		// Dialogs!
+		int dW = 300;
+		int dH = 200;
+		if (connectState != ConnectState.IDLE) {
+			modalOn  = true;
+			GUILayout.Window (0, new Rect (w / 2 - dW / 2, h / 2 - dH / 2, dW, dH),
+				AlertWindow, "");
+		} else if (displayConnectDialog) {
+			modalOn = true;
+			GUILayout.Window (0, new Rect (w / 2 - dW / 2, h / 2 - dH / 2, dW, dH),
+				ConnectWindow, "");
+		}
+		if (modalOn) {
+			GUI.enabled = false;	
+		}
+		GUILayout.BeginArea (new Rect (10, h/2-btnH, 200, 100));
 		
-		serverAddress = GUILayout.TextField (serverAddress);
-		
-		if (GUILayout.Button ("Connect and Play")) {
+		if (GUILayout.Button ("Connect and Play...")) {
 			print ("Playing");	
-			StartConnect();
+			displayConnectDialog = true;
 		}
 		
 		GUILayout.FlexibleSpace ();
@@ -102,13 +130,9 @@ public class Title : MonoBehaviour
 		
 		GUILayout.EndArea ();
 		
-		// Dialogs!
-		int dW = 300;
-		int dH = 200;
-		if (connectState != ConnectState.IDLE) {
-			GUILayout.Window (0, new Rect (w / 2 - dW / 2, h / 2 - dH / 2, dW, dH),
-				AlertWindow, "");
-		}
+		
+		
+		GUI.enabled = true;
 	}
 	
 	// Update is called once per frame
