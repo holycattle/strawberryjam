@@ -39,7 +39,7 @@ public class Wait : MonoBehaviour {
 				"Please tell people to connect to: " + Network.player.ipAddress,
 				topLabelStyle);
 			if (GUI.Button (new Rect(w/2 - btnW/2, 100, btnW, btnH), "Start Game!")) {
-				networkView.RPC("StartGame", RPCMode.All);	
+				networkView.RPC("MakeLoad", RPCMode.All);	
 			}
 		}
 		
