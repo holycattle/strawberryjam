@@ -32,9 +32,6 @@ public class Player : MonoBehaviour {
 	
 	public int activeDirection = 0;
 	
-	public bool controllable = false;
-	public bool AIcontrollable = false;
-	
 	public GameObject stunParticle;
 	public float fatness;
 	
@@ -113,7 +110,7 @@ public class Player : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-		if (controllable) {
+		if (Networking.myId == networkId) {
 			GUI.Box(new Rect(0, 0, 100, 30), "Fat: " + fatness);
 			if (GetComponent<ManualController>() != null) {
 				GUI.Label (new Rect(000, 200, 200, 400), "Rotation is: " + transform.rotation.eulerAngles);
@@ -122,7 +119,7 @@ public class Player : MonoBehaviour {
 	}
 	
 	void Update() {
-		if (controllable) {
+		if (Networking.myId == networkId) {
 			heartbeatTimer -= Time.deltaTime;
 			if (heartbeatTimer <= 0) {
 				audio.Play();
