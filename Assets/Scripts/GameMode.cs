@@ -96,8 +96,8 @@ public class GameMode : MonoBehaviour {
 			
 			if (Input.GetKey(KeyCode.Tab) || gameEnded) {
 				Debug.Log ("the end!");
-				int width = 100;
-				int height = 30;
+				int width = 120;
+				int height = 60;
 				int itr = 0;
 				foreach (Player p in players) {
 					GUI.Box(new Rect((Screen.width - width) / 2, (Screen.height - height * scores.Length / 2f) / 2 + height * itr,

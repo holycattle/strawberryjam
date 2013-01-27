@@ -10,7 +10,9 @@ public class Score {
 		g = gg;
 	}
 	
+	string[] names = {"Sloppy Joe (P1)", "Sumo Sushi (P2)", "Gourmet Piere (P3)", "Juan dela Cruz (P4)"};  
+	
 	public string GetString() {
-		return g.transform.name + ": " + kills.ToString() + "/" + deaths.ToString ();
+		return g.transform.gameObject.GetComponent<Player>().networkId + ": " + kills.ToString() + "/" + deaths.ToString ();
 	}
 }
