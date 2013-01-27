@@ -47,11 +47,9 @@ public class ManualController : MonoBehaviour
 			if(result != Vector3.zero){
 				result /= result.magnitude;
 				if (Networking.myId == 0) {
-					gameObject.GetComponent<Broadcaster>().BroadcastMoveForward(result, Networking.myId);
-					gameObject.GetComponent<Broadcaster>().BroadcastRotateTowards(result, Networking.myId);
+					gameObject.GetComponent<Broadcaster>().BroadcastRotateAndMove(result, Networking.myId);
 				} else {
-					networkView.RPC ("BroadcastMoveForward", Networking.players[0], result, Networking.myId);
-					networkView.RPC ("BroadcastRotateTowards", Networking.players[0], result, Networking.myId);
+					networkView.RPC ("BroadcastRotateAndMove", Networking.players[0], result, Networking.myId);
 				}
 			}
 		}
