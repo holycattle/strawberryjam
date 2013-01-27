@@ -30,6 +30,9 @@ public class Player : MonoBehaviour {
 	private AudioSource heartbeat;
 	private float stunRemaining;
 	
+	private AudioClip eatFoodSound;
+	private AudioClip bounceSound;
+	
 	// networking
 	public int networkId;
 	// end networking
@@ -75,6 +78,9 @@ public class Player : MonoBehaviour {
 		
 		score = new Score(this.gameObject);
 		fixedTicks = 0;
+		
+		eatFoodSound = Resources.Load("sfx/eatfood", typeof(AudioClip)) as AudioClip;
+		eatFoodSound = Resources.Load("sfx/bounce", typeof(AudioClip)) as AudioClip;
 	}
 	
 	void OnDestroy(){
@@ -141,9 +147,6 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	
-
-
 	public void MoveForward(Vector3 unitVector, int networkId){
 		if (this.networkId == networkId) {
 			if(status == State.WAITING){
@@ -234,9 +237,13 @@ public class Player : MonoBehaviour {
 		if(status != State.CHARGING){
 			//Charging is immune to knockback??
 			rigidbody.velocity = knockbackVector * MAX_SPEED;
+
 			distance = knockbackDistance;
 			updateFatness (-fatLoss);
 			status = State.PUSHED;
+			
+			// [Sound] Bounce
+			audio.PlayOneShot(bounceSound);
 		}
 	}
 	
@@ -271,9 +278,12 @@ public class Player : MonoBehaviour {
 				this.chargeCollided = true;
 				this.chargeVector = this.velocity;
 			}
-		}else if(tag == "Food"){
+		} else if(tag == "Food") {
 			if (Networking.myId == 0) {
 				networkView.RPC ("BroadcastEat", RPCMode.All, this.networkId, collision.gameObject.name);
+				
+				// [Sound] Food
+				audio.PlayOneShot(eatFoodSound);
 			}
 		}else if(tag == "AttackSphere"){
 			Vector3 v = position - collision.gameObject.rigidbody.position;
