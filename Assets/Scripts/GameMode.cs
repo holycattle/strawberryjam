@@ -34,12 +34,12 @@ public class GameMode : MonoBehaviour {
 		++GameMode.nConnected;
 		if (GameMode.nConnected == Networking.nPlayers) {
 			Debug.Log ("Starting game");
-			networkView.RPC ("StartGame", RPCMode.All);
+			networkView.RPC ("StartGame", RPCMode.All, Random.Range (0, 4));
 		}
 	}
 	
 	[RPC]
-	void StartGame() {
+	void StartGame(int sIdx) {
 		Debug.Log ("Seriously starting game");
 		// set my network ID
 		int nPlayers = Networking.nPlayers;
@@ -55,7 +55,7 @@ public class GameMode : MonoBehaviour {
 		players = new List<Player>();
 		for (int i = 0; i < nPlayers; ++i) {
 			
-			GameObject playerPrefab = Resources.Load ("prefabs/P" + (i + 1)) as GameObject;
+			GameObject playerPrefab = Resources.Load ("prefabs/P" + (i+1)) as GameObject;
 			GameObject player = Instantiate (playerPrefab,
 				Utils.startingPosition(i),
 				Quaternion.identity) as GameObject;
