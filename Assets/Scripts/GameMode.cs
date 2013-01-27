@@ -66,7 +66,9 @@ public class GameMode : MonoBehaviour {
 		
 		//get list of scores from each player
 		initScores();
-
+		
+		//Set gravity to super high.
+		Physics.gravity = Physics.gravity*5;
 		gameStarted = true;
 	}
 	
