@@ -3,9 +3,11 @@ using UnityEngine;
 public class ManualController : MonoBehaviour
 {
 	Player character;	
-	public void Start()
-	{
+	public void Start()	{
 		this.character = this.GetComponent<Player>();
+		
+		// Add the sprite thing
+		
 	}
 	
 	public void FixedUpdate(){
