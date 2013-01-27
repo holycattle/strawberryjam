@@ -166,7 +166,7 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	/*
+	
 	public void Shove(Vector3 unitVector, int networkId){
 		//I'm really not happy with how this turned out.
 		
@@ -208,8 +208,8 @@ public class Player : MonoBehaviour {
 			}
 		}
 		
-	}*/
-	
+	}
+	/*
 	public void Shove(Vector3 unitVector, int networkId){
 		if(status == State.WAITING){
 			GameObject AttackSphere = Resources.Load ("prefabs/AttackSphere") as GameObject;
@@ -223,7 +223,7 @@ public class Player : MonoBehaviour {
 			instance.rigidbody.velocity = vector * PROJECTILE_SPEED;
 		}
 	}
-	
+	*/
 	public void RotateTowards(Vector3 vector, int networkId){
 		if (this.networkId == networkId) {
 			var rot = Quaternion.LookRotation(vector);

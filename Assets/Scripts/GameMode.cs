@@ -58,7 +58,13 @@ public class GameMode : MonoBehaviour {
 			GameObject player = Instantiate (playerPrefab,
 				(new Vector3(Mathf.Cos (theta), 1, Mathf.Sin (theta))),
 				Quaternion.identity) as GameObject;
-			if (i == Networking.myId) player.AddComponent("ManualController");
+			if (i == Networking.myId) {
+				player.AddComponent("ManualController");
+				GameObject gPref = Resources.Load("prefabs/Selector", typeof(GameObject)) as GameObject;
+				GameObject g = Instantiate(gPref, Vector3.zero, Quaternion.identity) as GameObject;
+				g.transform.parent = player.transform;
+				g.transform.localPosition = new Vector3(0, 0.8f, 0);
+			}
 			Player p = player.GetComponent<Player>();
 			p.networkId = i;
 			players.Add (p);
