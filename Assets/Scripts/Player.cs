@@ -49,7 +49,7 @@ public class Player : MonoBehaviour {
 	
 	// desync-related stuff
 	private int fixedTicks;
-	private const int RESYNC_RATE = 5;
+	private const int RESYNC_RATE = 3;
 	// end desync-related
 	
 	public Player lastTouch;
@@ -148,7 +148,7 @@ public class Player : MonoBehaviour {
 		if (Networking.myId == 0) {
 			// resync this guy's position
 			networkView.RPC ("BroadcastResync", RPCMode.Others, this.networkId, transform.position, transform.rotation,
-				score.kills, score.deaths);
+				score.kills, score.deaths, fatness, velocity, distance, timer, lastTouch.networkId, sinceTouch, heartbeatInterval);
 		}
 	}
 	
