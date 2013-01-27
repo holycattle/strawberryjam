@@ -83,7 +83,7 @@ public class Title : MonoBehaviour
 		
 		var btnW = 150;
 		var btnH = 100;
-		GUILayout.BeginArea (new Rect (10, 10, 200, 100));
+		GUILayout.BeginArea (new Rect (10, 100, 200, 100));
 		
 		serverAddress = GUILayout.TextField (serverAddress);
 		

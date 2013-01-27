@@ -61,7 +61,9 @@ public class Player : MonoBehaviour {
 	public enum State {WAITING, CHARGING, SHOVING, PUSHED};
 	public State status;
 	
-	public Score score;
+	public Score score;	
+	public ParticleEmitter parEmit;
+	
 	private Vector3 old_position;
 	public Vector3 position
 	{
@@ -90,6 +92,9 @@ public class Player : MonoBehaviour {
 		
 		eatFoodSound = Resources.Load("sfx/eatfood", typeof(AudioClip)) as AudioClip;
 		eatFoodSound = Resources.Load("sfx/bounce", typeof(AudioClip)) as AudioClip;
+		
+		parEmit = GetComponentInChildren<ParticleEmitter>();
+		parEmit.emit = false;
 	}
 	
 	void OnDestroy(){
@@ -143,6 +148,8 @@ public class Player : MonoBehaviour {
 		fatness += amount;
 		if(fatness < 1) fatness = 1;
 		if(fatness > 10) fatness = 10;
+		
+		this.gameObject.transform.localScale += new Vector3(0.1f, 0.1f, 0.1f);
 	}
 	
 	void FixedUpdate () {
@@ -150,6 +157,7 @@ public class Player : MonoBehaviour {
 			old_position = position;
 		}
 		
+		parEmit.emit = false;
 		if(status == State.WAITING){
 			float traveled = (position-old_position).magnitude;
 			old_position = position;
@@ -162,6 +170,8 @@ public class Player : MonoBehaviour {
 				updateFatness(-WALK_CONSUMPTION*0.02f);
 			}
 		}else if(status == State.CHARGING){
+			parEmit.emit = true;
+
 			float traveled = (position-old_position).magnitude;
 			old_position = position;
 			if(traveled > 0.00001f){
