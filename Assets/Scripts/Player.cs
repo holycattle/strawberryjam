@@ -126,6 +126,8 @@ public class Player : MonoBehaviour {
 		fatness += amount;
 		if(fatness < 1) fatness = 1;
 		if(fatness > 10) fatness = 10;
+		
+		this.gameObject.transform.localScale += new Vector3(0.1f, 0.1f, 0.1f);
 	}
 	
 	void FixedUpdate () {
