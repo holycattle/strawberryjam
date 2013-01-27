@@ -27,7 +27,7 @@ public class Title : MonoBehaviour
 	
 	void StartServer ()
 	{
-		Network.InitializeServer (32, serverPort, false);
+		Network.InitializeServer (3, serverPort, false);
 		connectState = ConnectState.STARTING;
 	}
 	
