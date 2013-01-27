@@ -64,6 +64,7 @@ public class Player : MonoBehaviour {
 	public Score score;	
 	public ParticleEmitter parEmit;
 	
+	private Vector3 old_position;
 	public Vector3 position
 	{
 		get{ return this.transform.position; }
