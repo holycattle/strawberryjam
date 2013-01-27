@@ -17,8 +17,8 @@ public class Player : MonoBehaviour {
 	
 	const float PROJECTILE_SPEED = 15f;
 	
-	const double CHARGE_COOLDOWN = 0.75;
-	const double SHOVE_COOLDOWN = 0.40;
+	const float CHARGE_COOLDOWN = 0.75f;
+	const float SHOVE_COOLDOWN = 0.40f;
 	
 	// Heart Constants
 	const float NORMAL_HEART = 1f;
@@ -55,8 +55,8 @@ public class Player : MonoBehaviour {
 	public Player lastTouch;
 	public float sinceTouch;
 	
-	public double distance;
-	public double timer;
+	public float distance;
+	public float timer;
 	
 	public enum State {WAITING, CHARGING, SHOVING, PUSHED};
 	public State status;
@@ -75,8 +75,8 @@ public class Player : MonoBehaviour {
 		set { this.rigidbody.velocity = velocity; }
 	}
 	
-	public double chargeCooldown; //These will be <= 0 if usable.
-	public double shoveCooldown;
+	public float chargeCooldown; //These will be <= 0 if usable.
+	public float shoveCooldown;
 	
 	
 	void Start () {
@@ -149,7 +149,7 @@ public class Player : MonoBehaviour {
 		if (Networking.myId == 0) {
 			// resync this guy's position
 			networkView.RPC ("BroadcastResync", RPCMode.Others, this.networkId, transform.position, transform.rotation,
-				score.kills, score.deaths, fatness, velocity, distance, timer, lastTouch.networkId, sinceTouch, heartbeatInterval);
+				score.kills, score.deaths, fatness, velocity, distance, timer, lastTouch == null ? -1 : lastTouch.networkId, sinceTouch, heartbeatInterval);
 		}
 	}
 	
@@ -216,7 +216,7 @@ public class Player : MonoBehaviour {
 		if (this.networkId == networkId) {
 			if(status == State.WAITING){
 				rigidbody.velocity = unitVector * (MIN_SPEED + FAT_SPEED/fatness);
-				distance = 0.10;
+				distance = 0.10f;
 			}
 		}
 	}
