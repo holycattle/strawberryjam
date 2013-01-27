@@ -16,6 +16,6 @@ public class KillingFloor : MonoBehaviour {
 //		Debug.Log("kills: " + p.lastTouch.score.kills.ToString());
 		Debug.Log ("Attaching reviver");
 		Reviver r = c.gameObject.AddComponent<Reviver>();
-		r.remaining = 6f;
+		r.remaining = 2f;
 	}
 }

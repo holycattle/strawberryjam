@@ -14,7 +14,7 @@ public class Reviver : MonoBehaviour {
 		if (remaining <= 0) {
 			Debug.Log ("STARTING");
 			// Revive
-			transform.position = new Vector3(0, 1, 0);
+			transform.position = Utils.startingPosition(gameObject.GetComponent<Player>().networkId);
 //			gameObject.SetActive(true);
 			Destroy(this);
 		}
