@@ -140,7 +140,8 @@ public class Player : MonoBehaviour {
 		// resync
 		if (Networking.myId == 0) {
 			// resync this guy's position
-			networkView.RPC ("BroadcastResync", RPCMode.Others, this.networkId, transform.position, transform.rotation);
+			networkView.RPC ("BroadcastResync", RPCMode.Others, this.networkId, transform.position, transform.rotation,
+				score.kills, score.deaths);
 		}
 	}
 	
