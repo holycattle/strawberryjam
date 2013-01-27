@@ -91,7 +91,7 @@ public class Player : MonoBehaviour {
 		fixedTicks = 0;
 		
 		eatFoodSound = Resources.Load("sfx/eatfood", typeof(AudioClip)) as AudioClip;
-		eatFoodSound = Resources.Load("sfx/bounce", typeof(AudioClip)) as AudioClip;
+		bounceSound = Resources.Load("sfx/bounce", typeof(AudioClip)) as AudioClip;
 		
 		parEmit = GetComponentInChildren<ParticleEmitter>();
 		parEmit.emit = false;
@@ -149,7 +149,7 @@ public class Player : MonoBehaviour {
 		if(fatness < 1) fatness = 1;
 		if(fatness > 10) fatness = 10;
 		
-		this.gameObject.transform.localScale += new Vector3(0.1f, 0.1f, 0.1f);
+		this.gameObject.transform.localScale = new Vector3(1+0.15f*fatness, 1+0.15f*fatness, 1+0.15f*fatness);
 	}
 	
 	void FixedUpdate () {
@@ -161,7 +161,7 @@ public class Player : MonoBehaviour {
 		if(status == State.WAITING){
 			float traveled = (position-old_position).magnitude;
 			old_position = position;
-			if(traveled > 0.00001f){
+			if(traveled > 0.001f){
 				distance -= traveled;
 				if(distance <= 0){
 					rigidbody.velocity = Vector3.zero;
@@ -174,7 +174,7 @@ public class Player : MonoBehaviour {
 
 			float traveled = (position-old_position).magnitude;
 			old_position = position;
-			if(traveled > 0.00001f){
+			if(traveled > 0.001f){
 				distance -= traveled;
 				if(distance <= 0){
 					rigidbody.velocity = Vector3.zero;
@@ -188,7 +188,7 @@ public class Player : MonoBehaviour {
 		}else if(status == State.PUSHED){
 			float traveled = (position-old_position).magnitude;
 			old_position = position;
-			if(traveled > 0.00001f){
+			if(traveled > 0.001f){
 				distance -= traveled;
 				if(distance <= 0){
 					rigidbody.velocity = Vector3.zero;
@@ -298,6 +298,8 @@ public class Player : MonoBehaviour {
 			status = State.PUSHED;
 			
 			// [Sound] Bounce
+			audio.PlayOneShot(bounceSound);
+		} else if(status != State.SHOVING) {
 			audio.PlayOneShot(bounceSound);
 		}
 	}
