@@ -49,7 +49,7 @@ public class Player : MonoBehaviour {
 	
 	// desync-related stuff
 	private int fixedTicks;
-	private const int RESYNC_RATE = 5;
+	private const int RESYNC_RATE = 1;
 	// end desync-related
 	
 	public Player lastTouch;
