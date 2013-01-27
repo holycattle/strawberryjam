@@ -271,6 +271,8 @@ public class Player : MonoBehaviour {
 		string tag = collision.gameObject.tag;
 		if(tag == "Player"){
 			Player enemy = collision.gameObject.GetComponent<Player>();
+			this.lastTouch = enemy;
+			enemy.lastTouch = this;
 			if(this.status == State.CHARGING && enemy.status != State.CHARGING){
 				Vector3 v = enemy.position - position;
 				v /= v.magnitude;
