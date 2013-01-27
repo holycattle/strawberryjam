@@ -12,6 +12,9 @@ public class Wait : MonoBehaviour {
 	public GUIStyle IPAddress;
 	public GUISkin ski;
 	
+	public Texture2D aa;
+	public Texture2D bb;
+	
 	// Use this for initialization
 	void Start () {
 		// Load stuff
@@ -74,6 +77,9 @@ public class Wait : MonoBehaviour {
 		for (int i = 0; i < 4; i++) {
 			GUI.DrawTexture(rects[i], faces[i][i < Networking.nPlayers ? 1 : 0]);
 		}
+		
+		GUI.DrawTexture(new Rect(0, 144, 256, 256), aa);
+		GUI.DrawTexture(new Rect(Screen.width - 256, 144, 256, 256), bb);
 		
 		GUI.skin = null;
 	}
