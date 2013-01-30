@@ -13,7 +13,7 @@ public class GameMode : MonoBehaviour {
 	float timeRemaining;
 	bool gameEnded = false;
 	
-	public static List<Player> players;
+	public static Player[] players;
 	public static int nConnected = 0;
 	public static bool gameStarted = false;
 	public static Player mainPlayer;
@@ -52,7 +52,7 @@ public class GameMode : MonoBehaviour {
 		}
 		
 		// create the players
-		players = new List<Player>();
+		players = new Player[nPlayers];
 		for (int i = 0; i < nPlayers; ++i) {
 			
 			GameObject playerPrefab = Resources.Load ("prefabs/P" + (i+1)) as GameObject;
@@ -70,7 +70,7 @@ public class GameMode : MonoBehaviour {
 			}
 			Player p = player.GetComponent<Player>();
 			p.networkId = i;
-			players.Add (p);
+			players[i] = p;
 		}
 		
 		//get list of scores from each player
@@ -158,7 +158,7 @@ public class GameMode : MonoBehaviour {
 	public void initScores() {
 		int i = 0;
 		foreach(Player p in players) {
-			scores = new Score[players.Count];
+			scores = new Score[Networking.nPlayers];
 			scores[i++] = p.score;
 		}
 		Debug.Log ("populating scores list...");

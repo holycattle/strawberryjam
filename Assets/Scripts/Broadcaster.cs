@@ -10,46 +10,40 @@ public class Broadcaster : MonoBehaviour {
 	
 	[RPC]
 	public void BroadcastMoveForward(Vector3 unitVector, int networkId){
-		foreach (Player player in GameMode.players) {
-			player.MoveForward(unitVector, networkId);
-		}
+		Player player = GameMode.players[networkId];
+		player.MoveForward(unitVector);
 	}
 	
 	[RPC]
 	public void BroadcastCharge(Vector3 unitVector, int networkId){
-		foreach (Player player in GameMode.players) {
-			player.Charge(unitVector, networkId);
-		}
+		Player player = GameMode.players[networkId];
+		player.Charge(unitVector);
 	}
 	
 	[RPC]
 	public void BroadcastShove(Vector3 unitVector, int networkId){
-		foreach (Player player in GameMode.players) {
-			player.Shove(unitVector, networkId);
-		}
+		Player player = GameMode.players[networkId];
+		player.Shove(unitVector);
 	}
 	
 	[RPC]
 	public void BroadcastRotateTowards(Vector3 vector, int networkId){
-		foreach (Player player in GameMode.players) {
-			player.RotateTowards(vector, networkId);
-		}
+		Player player = GameMode.players[networkId];
+		player.RotateTowards(vector);
 	}
 	
 	[RPC]
 	public void BroadcastRotateAndMove(Vector3 vector, int networkId){
 		Player player = GameMode.players[networkId];
-		player.MoveForward (vector, networkId);
-		player.RotateTowards(vector, networkId);
+		player.MoveForward (vector);
+		player.RotateTowards(vector);
 	}
 	
 	[RPC]
 	public void BroadcastResync(int networkId, Vector3 position, Quaternion rotation) {
 		Player player = GameMode.players[networkId];
-		player.transform.position = position;
-		player.transform.rotation = rotation;
-		player.rigidbody.rotation = rotation;
 		player.rigidbody.position = position;
+		player.rigidbody.rotation = rotation;
 	}
 	
 	[RPC]

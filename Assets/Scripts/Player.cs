@@ -211,17 +211,14 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	public void MoveForward(Vector3 unitVector, int networkId){
-		if (this.networkId == networkId) {
+	public void MoveForward(Vector3 unitVector){
 			if(status == State.WAITING){
 				rigidbody.velocity = unitVector * (MIN_SPEED + FAT_SPEED/fatness);
 				distance = 0.10;
 			}
-		}
 	}
 	
-	public void Charge(Vector3 unitVector, int networkId){
-		if (this.networkId == networkId) {
+	public void Charge(Vector3 unitVector){
 			if(status == State.WAITING && chargeCooldown <= 0){
 				rigidbody.velocity = unitVector * CHARGE_SPEED;
 				status = State.CHARGING;
@@ -229,14 +226,12 @@ public class Player : MonoBehaviour {
 				updateFatness (-CHARGE_CONSUMPTION);
 				chargeCooldown = CHARGE_COOLDOWN;
 			}
-		}
 	}
 	
 	
-	public void Shove(Vector3 unitVector, int networkId){
+	public void Shove(Vector3 unitVector){
 		//I'm really not happy with how this turned out.
 		
-		if (this.networkId == networkId) {
 			if(status == State.WAITING && shoveCooldown <= 0){
 				updateFatness (-SHOVE_CONSUMPTION);
 				status = State.SHOVING;
@@ -276,7 +271,6 @@ public class Player : MonoBehaviour {
 				
 				shoveCooldown = SHOVE_COOLDOWN;
 			}
-		}
 	}
 	/*
 	public void Shove(Vector3 unitVector, int networkId){
@@ -293,13 +287,11 @@ public class Player : MonoBehaviour {
 		}
 	}
 	*/
-	public void RotateTowards(Vector3 vector, int networkId){
-		if (this.networkId == networkId) {
+	public void RotateTowards(Vector3 vector){
 			var rot = Quaternion.LookRotation(vector);
 			transform.rotation = Quaternion.Euler(0, rot.eulerAngles[1], 0);
 			rigidbody.rotation = Quaternion.Euler(0, rot.eulerAngles[1], 0);
 			
-		}
 	}
 	
 	public void Attacked(Vector3 knockbackVector, float knockbackDistance, float fatLoss){
