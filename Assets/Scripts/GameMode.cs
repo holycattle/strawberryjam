@@ -61,12 +61,14 @@ public class GameMode : MonoBehaviour {
 				Quaternion.identity) as GameObject;
 			if (i == Networking.myId) {
 				player.AddComponent("ManualController");
-				GameObject gPref = Resources.Load("prefabs/Selector", typeof(GameObject)) as GameObject;
+				/*GameObject gPref = Resources.Load("prefabs/Selector", typeof(GameObject)) as GameObject;
 				GameObject g = Instantiate(gPref, Vector3.zero, Quaternion.identity) as GameObject;
 				g.transform.parent = player.transform;
-				g.transform.localPosition = new Vector3(0, 0.8f, 0);
+				g.transform.localPosition = new Vector3(0, 0.8f, 0);*/
 				
+				//spriteObj.renderer.material = Resources.Load("PlayerShadow") as Material;
 				mainPlayer = player.GetComponent<Player>();
+				mainPlayer.transform.FindChild("Sprite").FindChild("Shadow").renderer.material = Resources.Load("PlayerShadow") as Material;
 			}
 			Player p = player.GetComponent<Player>();
 			p.networkId = i;
