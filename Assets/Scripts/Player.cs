@@ -171,6 +171,8 @@ public class Player : MonoBehaviour {
 		if(fatness > 10) fatness = 10;
 		
 		this.gameObject.transform.localScale = new Vector3(1+0.15f*fatness, 1+0.15f*fatness, 1+0.15f*fatness);
+		
+		
 	}
 	
 	void FixedUpdate () {

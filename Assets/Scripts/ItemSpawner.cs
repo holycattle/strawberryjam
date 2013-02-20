@@ -42,7 +42,7 @@ public class ItemSpawner : MonoBehaviour {
 				if (numFood <= FOOD_LIMIT) {
 					float r = MAP_RAD*Mathf.Sqrt(Random.Range (0f, 1f));
 					float theta = Random.Range (0f, 1f)*2*Mathf.PI;
-					Vector3 v = new Vector3(r*Mathf.Cos(theta), 1, r*Mathf.Sin (theta));
+					Vector3 v = new Vector3(r*Mathf.Cos(theta), 2, r*Mathf.Sin (theta));
 					 	
 					
 					int foodType = Random.Range (0, s.Length -1);
